@@ -122,7 +122,7 @@ const Home = () => {
             <ul style={{ marginBottom: 24 }}>
               <li>
                 <Typography variant="body1" paragraph>
-                  National Diploma in Nursing: Two (2) years.
+                  National Diploma in Nursing: Two (2) years National Diploma plus two (2) years Higher National Diploma. Total four (4) years.
                 </Typography>
               </li>
               <li>
@@ -148,7 +148,7 @@ const Home = () => {
               <li>
                 <Typography variant="body1" paragraph>
                   National Diploma in Nursing candidate must have written the 2025
-                  UTME exams and must be at least 17 years or above at the time
+                  UTME exams and must be at least 16 years or above at the time
                   of application.
                 </Typography>
               </li>

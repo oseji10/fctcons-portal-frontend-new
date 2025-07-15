@@ -216,7 +216,7 @@ const Apply = () => {
 
             if (response.data.status === 'success') {
                 setApplicationId(response.data.applicationId);
-                setSuccess('Registration submitted successfully!');
+                setSuccess('Application submitted successfully!');
                 handleNext();
             } else {
                 throw new Error(response.data.message || 'Submission failed');
@@ -225,7 +225,7 @@ const Apply = () => {
             setError(
                 error.response?.data?.message || 
                 error.message || 
-                'Failed to submit registration'
+                'Failed to submit application'
             );
         } finally {
             setIsSubmitting(false);
@@ -610,7 +610,7 @@ const Apply = () => {
                 <Card>
                     <CardContent>
                         <Typography variant="h6" gutterBottom>
-                            Registration Summary
+                            Application Summary
                         </Typography>
                         <Grid container spacing={2}>
                             <Grid item xs={12}>
@@ -707,7 +707,7 @@ const Apply = () => {
                             Payment
                         </Typography>
                         <Typography sx={{ mb: 2 }}>
-                            Please complete your payment to finalize registration.
+                            Please complete your payment to finalize application.
                         </Typography>
 
                         {paymentMessage && (
@@ -791,7 +791,7 @@ const Apply = () => {
                             Exam Slip
                         </Typography>
                         <Typography sx={{ mb: 3 }}>
-                            Your registration is complete. Download your exam slip below.
+                            Your application is complete. Download your exam slip below.
                         </Typography>
 
                         <Grid container spacing={2} sx={{ mb: 3 }}>
@@ -868,7 +868,7 @@ const Apply = () => {
                         disabled={isSubmitting}
                         startIcon={isSubmitting ? <CircularProgress size={20} /> : null}
                     >
-                        {isSubmitting ? 'Submitting...' : 'Submit Registration'}
+                        {isSubmitting ? 'Submitting...' : 'Submit Application'}
                     </Button>
                 ) : activeStep === 4 ? (
                     <Button
