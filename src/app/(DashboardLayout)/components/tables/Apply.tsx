@@ -51,6 +51,9 @@ const Apply = () => {
     const router = useRouter();
     const [isPaymentVerified, setIsPaymentVerified] = useState(false);
 
+    const [isDownloading, setIsDownloading] = useState(false);
+    const [downloadProgress, setDownloadProgress] = useState(0);
+
     // Mock user data - replace with actual auth functions
     const fullname = getCandidateName();
     
@@ -316,32 +319,48 @@ const Apply = () => {
     };
 
     const downloadExamSlip = async () => {
-        if (!applicationId) {
-            setError('No application ID found.');
-            return;
-        }
+    if (!applicationId) {
+        setError('No application ID found.');
+        return;
+    }
+    
+    setIsDownloading(true);
+    setDownloadProgress(0);
+    
+    try {
+        const response = await api.get(`/application/slip/${applicationId}`, {
+            responseType: 'blob',
+            onDownloadProgress: (progressEvent) => {
+                if (progressEvent.total) {
+                    const percentCompleted = Math.round(
+                        (progressEvent.loaded * 100) / progressEvent.total
+                    );
+                    setDownloadProgress(percentCompleted);
+                }
+            }
+        });
         
-        try {
-            const response = await api.get(`/application/slip/${applicationId}`, {
-                responseType: 'blob',
-            });
-            const url = window.URL.createObjectURL(new Blob([response.data]));
-            const link = document.createElement('a');
-            link.href = url;
-            link.setAttribute('download', `ExamSlip-${applicationId}.pdf`);
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            window.URL.revokeObjectURL(url);
-        } catch (error: any) {
-            setError(
-                error.response?.data?.message || 
-                error.message || 
-                'Failed to download exam slip'
-            );
-        }
-    };
-
+        const url = window.URL.createObjectURL(new Blob([response.data]));
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', `ExamSlip-${applicationId}.pdf`);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(url);
+        
+        setSuccess('Exam slip downloaded successfully!');
+    } catch (error: any) {
+        setError(
+            error.response?.data?.message || 
+            error.message || 
+            'Failed to download exam slip'
+        );
+    } finally {
+        setIsDownloading(false);
+        setDownloadProgress(0);
+    }
+};
     return (
         <DashboardCard title="Exam Registration">
             <Stepper activeStep={activeStep} sx={{ mb: 4 }}>
@@ -790,17 +809,33 @@ const Apply = () => {
                             </Grid>
                         </Grid>
 
-                        <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-                            <Button
-                                variant="contained"
-                                color="primary"
-                                onClick={downloadExamSlip}
-                                startIcon={<DownloadIcon />}
-                                sx={{ px: 4 }}
-                            >
-                                Download Exam Slip
-                            </Button>
-                        </Box>
+                       <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2 }}>
+    <Button
+        variant="contained"
+        color="primary"
+        onClick={downloadExamSlip}
+        disabled={isDownloading}
+        startIcon={isDownloading ? <CircularProgress size={20} /> : <DownloadIcon />}
+        sx={{ px: 4 }}
+    >
+        {isDownloading ? 'Downloading...' : 'Download Exam Slip'}
+    </Button>
+    
+    {isDownloading && (
+        <Box sx={{ width: '100%', maxWidth: 360 }}>
+            <LinearProgress 
+                variant={downloadProgress > 0 ? "determinate" : "indeterminate"}
+                value={downloadProgress}
+                sx={{ height: 8, borderRadius: 4 }}
+            />
+            {downloadProgress > 0 && (
+                <Typography variant="caption" color="text.secondary" sx={{ mt: 1 }}>
+                    {downloadProgress}% downloaded
+                </Typography>
+            )}
+        </Box>
+    )}
+</Box>
                     </CardContent>
                 </Card>
             )}

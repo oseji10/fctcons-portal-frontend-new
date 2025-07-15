@@ -12,7 +12,7 @@ import Batches from '../../components/tables/Batches';
 
 const SamplePage = () => {
   return (
-    <PageContainer title="JAMB Data" description="JAMB Uploaded Data" allowedRoles={['ADMIN']}>
+    <PageContainer title="Batches" description="All batches" allowedRoles={['ADMIN']}>
       <DashboardCard >
         <Batches/>
       </DashboardCard>

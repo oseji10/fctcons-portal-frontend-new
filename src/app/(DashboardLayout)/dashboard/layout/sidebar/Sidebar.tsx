@@ -115,7 +115,7 @@ const MSidebar = ({
           {/* ------------------------------------------- */}
           {/* Logo */}
           {/* ------------------------------------------- */}
-          <Logo img="/images/logos/sokoto-palliative2.svg" />
+          <Logo img="/images/fctson1.svg" />
           {/* ------------------------------------------- */}
           {/* Sidebar Items: Renders filtered menu items based on staffType and role */}
           {/* ------------------------------------------- */}

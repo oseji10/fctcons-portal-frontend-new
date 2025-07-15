@@ -11,7 +11,7 @@ import Apply from '../../components/tables/Apply';
 
 const SamplePage = () => {
   return (
-    <PageContainer title="Cadres" description="List of all cadres">
+    <PageContainer title="2025 Application" description="Application page">
       <DashboardCard >
         <Apply/>
       </DashboardCard>

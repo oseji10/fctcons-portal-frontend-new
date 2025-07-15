@@ -10,7 +10,7 @@ import Applications from '../../components/tables/Applications';
 
 const SamplePage = () => {
   return (
-    <PageContainer title="JAMB Data" description="JAMB Uploaded Data" allowedRoles={['ADMIN']}>
+    <PageContainer title="Applications" description="All Applications" allowedRoles={['ADMIN']}>
       <DashboardCard >
         <Applications/>
       </DashboardCard>
