@@ -12,7 +12,7 @@ import MyExamSlips from '../../components/tables/MySlips';
 
 const SamplePage = () => {
   return (
-    <PageContainer title="2025 Application" description="Application page">
+    <PageContainer title="My Slip" description="Exam slip page">
       <DashboardCard >
         <MyExamSlips/>
       </DashboardCard>

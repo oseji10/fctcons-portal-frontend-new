@@ -127,13 +127,13 @@ const AuthLogin = () => {
         <form onSubmit={handleLogin}>
           <Stack spacing={3}>
             <TextField
-              label="Username"
+              label="Email"
               variant="outlined"
               fullWidth
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               disabled={isSubmitting}
-              placeholder="Enter your username"
+              placeholder="Enter your Email"
             />
 
             <TextField

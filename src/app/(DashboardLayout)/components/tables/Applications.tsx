@@ -36,6 +36,7 @@ import VisibilityIcon from '@mui/icons-material/Visibility';
 import ClearIcon from '@mui/icons-material/Clear';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
+import SwapHorizIcon from '@mui/icons-material/SwapHoriz';
 
 interface Application {
     id: number;
@@ -74,10 +75,16 @@ interface Application {
     };
 }
 
+interface FilterOptions {
+    batches: string[];
+    statuses: { value: string; label: string }[];
+}
+
 const Applications = () => {
     const [applications, setApplications] = useState<Application[]>([]);
     const [openModal, setOpenModal] = useState(false);
     const [viewModalOpen, setViewModalOpen] = useState(false);
+    const [batchChangeModalOpen, setBatchChangeModalOpen] = useState(false);
     const [currentApplication, setCurrentApplication] = useState<Application | null>(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
@@ -89,14 +96,18 @@ const Applications = () => {
     const [expandedRow, setExpandedRow] = useState<number | null>(null);
     const [statusFilter, setStatusFilter] = useState<string>("");
     const [batchFilter, setBatchFilter] = useState<string>("");
+const [availableBatches, setAvailableBatches] = useState<string[]>([]);
+    const [selectedBatch, setSelectedBatch] = useState<string>("");
     const perPage = 10;
 
-    const statusOptions = [
-        { value: 'account_created', label: 'Account Created' },
-        { value: 'form_submitted', label: 'Form Submitted' },
-        { value: 'payment_pending', label: 'Payment Pending' },
-        { value: 'payment_completed', label: 'Payment Completed' }
-    ];
+    const filterOptions: FilterOptions = {
+        batches: ['1A', '1B'], // Updated based on API response and edit modal options
+        statuses: [
+            { value: 'not_submitted', label: 'Account Created' },
+            { value: 'payment_pending', label: 'Submitted, Payment Pending' },
+            { value: 'payment_completed', label: 'Payment Completed' }
+        ]
+    };
 
     const fetchData = async () => {
         setIsLoading(true);
@@ -115,10 +126,18 @@ const Applications = () => {
                 setApplications(response.data);
                 setTotalPages(1);
                 setTotalRecords(response.data.length);
+                
+                // Update filter options with unique batches from response
+                const batches = [...new Set(response.data.map((app: Application) => app.batch).filter(b => b))] as string[];
+                filterOptions.batches = batches.length > 0 ? batches : filterOptions.batches;
             } else {
                 setApplications(response.data?.data || []);
                 setTotalPages(response.data?.last_page || 1);
                 setTotalRecords(response.data?.total || 0);
+                
+                // Update filter options with unique batches from response
+                const batches = [...new Set(response.data?.data?.map((app: Application) => app.batch).filter(b => b))] as string[];
+                filterOptions.batches = batches.length > 0 ? batches : filterOptions.batches;
             }
             setError(null);
         } catch (error: any) {
@@ -130,12 +149,31 @@ const Applications = () => {
         }
     };
 
+   const fetchAvailableBatches = async () => {
+    try {
+        const response = await api.get('/all-batches');
+        if (response.data && Array.isArray(response.data)) {
+            // Extract just the batchId values from the response
+            const batchIds = response.data.map(batch => batch.batchId);
+            setAvailableBatches(batchIds);
+        }
+    } catch (error) {
+        console.error('Error fetching batches:', error);
+    }
+};
+
     useEffect(() => {
         fetchData();
-    }, [currentPage, searchQuery, statusFilter, batchFilter]);
+        fetchAvailableBatches();
+    }, [currentPage]); // Only trigger fetch on page change
 
     const handlePageChange = (event: React.ChangeEvent<unknown>, page: number) => {
         setCurrentPage(page);
+    };
+
+    const handleSearch = () => {
+        setCurrentPage(1); // Reset to first page on new search
+        fetchData();
     };
 
     const handleOpenEditModal = (application: Application) => {
@@ -148,9 +186,16 @@ const Applications = () => {
         setViewModalOpen(true);
     };
 
+    const handleOpenBatchChangeModal = (application: Application) => {
+        setCurrentApplication(application);
+        setSelectedBatch(application.batch);
+        setBatchChangeModalOpen(true);
+    };
+
     const handleCloseModal = () => {
         setOpenModal(false);
         setViewModalOpen(false);
+        setBatchChangeModalOpen(false);
         setCurrentApplication(null);
         setError(null);
         setIsSubmitting(false);
@@ -194,6 +239,37 @@ const Applications = () => {
         }
     };
 
+    const handleBatchChangeSubmit = async () => {
+        if (!currentApplication || !selectedBatch) return;
+        
+        setIsSubmitting(true);
+        try {
+            const response = await api.put(`/application/${currentApplication.applicationId}/change-batch`, {
+                batch: selectedBatch
+            });
+            
+            if (response.status >= 200 && response.status < 300) {
+                const updatedApplications = applications.map(a => 
+                    a.id === currentApplication.id ? response.data : a
+                );
+                setApplications(updatedApplications);
+                setError(null);
+                handleCloseModal();
+                 window.location.reload();
+            } else {
+                throw new Error(response.data?.message || 'Batch change failed');
+            }
+        } catch (error: any) {
+            setError(
+                error.response?.data?.message || 
+                error.message || 
+                'Failed to change batch'
+            );
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
+
     const handleRowExpand = (id: number) => {
         setExpandedRow(expandedRow === id ? null : id);
     };
@@ -205,10 +281,8 @@ const Applications = () => {
 
     const getStatusColor = (status: string) => {
         switch (status) {
-            case 'account_created':
+            case 'not_submitted':
                 return 'default';
-            case 'form_submitted':
-                return 'info';
             case 'payment_pending':
                 return 'warning';
             case 'payment_completed':
@@ -219,22 +293,52 @@ const Applications = () => {
     };
 
     const formatFullName = (user: any) => {
-        return `${user.firstName} ${user.lastName}${user.otherNames ? ' ' + user.otherNames : ''}`;
+        return `${user?.firstName} ${user?.lastName}${user?.otherNames ? ' ' + user?.otherNames : ''}`;
     };
 
     return (
         <DashboardCard title="Applications">
-            <Box mb={2} display="flex" justifyContent="flex-end" alignItems="center">
-                <Box mb={2} display="flex" justifyContent="space-between" alignItems="center" gap={2}>
+            <Box mb={2} display="flex"  alignItems="left">
+                <Box mb={2} display="flex" justifyContent="space-between" alignItems="left" gap={2}>
+                    <FormControl sx={{ minWidth: 200, flex: 1 }}>
+                        <InputLabel>Filter by Status</InputLabel>
+                        <Select
+                            value={statusFilter}
+                            onChange={(e) => setStatusFilter(e.target.value)}
+                            label="Filter by Status"
+                        >
+                            <MenuItem value="">All Statuses</MenuItem>
+                            {filterOptions.statuses.map(option => (
+                                <MenuItem key={option.value} value={option.value}>
+                                    {option.label}
+                                </MenuItem>
+                            ))}
+                        </Select>
+                    </FormControl>
+
+                    <FormControl sx={{ minWidth: 200, flex: 1 }}>
+                        <InputLabel>Filter by Batch</InputLabel>
+                        <Select
+                            value={batchFilter}
+                            onChange={(e) => setBatchFilter(e.target.value)}
+                            label="Filter by Batch"
+                        >
+                            <MenuItem value="">All Batches</MenuItem>
+                            {filterOptions.batches.map(batch => (
+                                <MenuItem key={batch} value={batch}>
+                                    Batch {batch}
+                                </MenuItem>
+                            ))}
+                        </Select>
+                    </FormControl>
+
                     <TextField
+                    sx={{ minWidth: 300, flex: 1 }}
                         fullWidth
                         variant="outlined"
                         placeholder="Search by application ID, JAMB ID or name..."
                         value={searchQuery}
-                        onChange={(e) => {
-                            setSearchQuery(e.target.value);
-                            setCurrentPage(1);
-                        }}
+                        onChange={(e) => setSearchQuery(e.target.value)}
                         InputProps={{
                             endAdornment: searchQuery && (
                                 <IconButton onClick={() => setSearchQuery("")}>
@@ -242,50 +346,17 @@ const Applications = () => {
                                 </IconButton>
                             ),
                         }}
+                        // sx={{ flex: 2 }}
                     />
                     <Button 
                         variant="contained" 
-                        onClick={() => fetchData()}
+                        onClick={handleSearch}
                         disabled={isLoading}
+                        sx={{ height: '56px' }}
                     >
                         Search
                     </Button>
                 </Box>
-            </Box>
-
-            <Box mb={2} display="flex" gap={2}>
-                <FormControl sx={{ minWidth: 200 }}>
-                    <InputLabel>Filter by Status</InputLabel>
-                    <Select
-                        value={statusFilter}
-                        onChange={(e) => {
-                            setStatusFilter(e.target.value);
-                            setCurrentPage(1);
-                        }}
-                        label="Filter by Status"
-                    >
-                        <MenuItem value="">All Statuses</MenuItem>
-                        {statusOptions.map(option => (
-                            <MenuItem key={option.value} value={option.value}>{option.label}</MenuItem>
-                        ))}
-                    </Select>
-                </FormControl>
-
-                <FormControl sx={{ minWidth: 200 }}>
-                    <InputLabel>Filter by Batch</InputLabel>
-                    <Select
-                        value={batchFilter}
-                        onChange={(e) => {
-                            setBatchFilter(e.target.value);
-                            setCurrentPage(1);
-                        }}
-                        label="Filter by Batch"
-                    >
-                        <MenuItem value="">All Batches</MenuItem>
-                        <MenuItem value="1A">Batch 1A</MenuItem>
-                        <MenuItem value="1B">Batch 1B</MenuItem>
-                    </Select>
-                </FormControl>
             </Box>
 
             {error && (
@@ -379,8 +450,8 @@ const Applications = () => {
                                                 </TableCell>
                                                 <TableCell>
                                                     <Chip 
-                                                        label={application.status.replace('_', ' ')} 
-                                                        color={getStatusColor(application.status)}
+                                                        label={filterOptions.statuses.find(opt => opt.value === application?.status)?.label || application?.status?.replace('_', ' ')} 
+                                                        color={getStatusColor(application?.status)}
                                                         size="small"
                                                     />
                                                 </TableCell>
@@ -391,6 +462,14 @@ const Applications = () => {
                                                     <IconButton onClick={() => handleOpenEditModal(application)}>
                                                         <EditIcon />
                                                     </IconButton>
+                                                    {application.status === 'payment_completed' && (
+                                                        <IconButton 
+                                                            onClick={() => handleOpenBatchChangeModal(application)}
+                                                            color="primary"
+                                                        >
+                                                            <SwapHorizIcon />
+                                                        </IconButton>
+                                                    )}
                                                 </TableCell>
                                             </TableRow>
                                             <TableRow>
@@ -407,23 +486,23 @@ const Applications = () => {
                                                                             Personal Information
                                                                         </Typography>
                                                                         <Typography>
-                                                                            <strong>Full Name:</strong> {formatFullName(application.users)}
+                                                                            <strong>Full Name:</strong> {formatFullName(application?.users)}
                                                                         </Typography>
                                                                         <Typography>
-                                                                            <strong>Date of Birth:</strong> {formatDate(application.dateOfBirth)}
+                                                                            <strong>Date of Birth:</strong> {formatDate(application?.dateOfBirth)}
                                                                         </Typography>
                                                                         <Typography>
-                                                                            <strong>Gender:</strong> {application.gender}
+                                                                            <strong>Gender:</strong> {application?.gender}
                                                                         </Typography>
                                                                         <Typography>
-                                                                            <strong>Email:</strong> {application.users.email}
+                                                                            <strong>Email:</strong> {application?.users?.email}
                                                                         </Typography>
                                                                         <Typography>
-                                                                            <strong>Phone:</strong> {application.users.phoneNumber}
+                                                                            <strong>Phone:</strong> {application?.users?.phoneNumber}
                                                                         </Typography>
                                                                         {application.alternatePhoneNumber && (
                                                                             <Typography>
-                                                                                <strong>Alternate Phone:</strong> {application.alternatePhoneNumber}
+                                                                                <strong>Alternate Phone:</strong> {application?.alternatePhoneNumber}
                                                                             </Typography>
                                                                         )}
                                                                     </Paper>
@@ -434,34 +513,34 @@ const Applications = () => {
                                                                             Application Information
                                                                         </Typography>
                                                                         <Typography>
-                                                                            <strong>Application ID:</strong> {application.applicationId}
+                                                                            <strong>Application ID:</strong> {application?.applicationId}
                                                                         </Typography>
                                                                         <Typography>
-                                                                            <strong>JAMB ID:</strong> {application.jambId}
+                                                                            <strong>JAMB ID:</strong> {application?.jambId}
                                                                         </Typography>
                                                                         <Typography>
-                                                                            <strong>Batch:</strong> {application.batch}
+                                                                            <strong>Batch:</strong> {application?.batch}
                                                                         </Typography>
                                                                         <Typography>
                                                                             <strong>Status:</strong> 
                                                                             <Chip 
-                                                                                label={application.status.replace('_', ' ')} 
-                                                                                color={getStatusColor(application.status)}
+                                                                                label={filterOptions.statuses.find(opt => opt.value === application?.status)?.label || application?.status?.replace('_', ' ')} 
+                                                                                color={getStatusColor(application?.status)}
                                                                                 size="small"
                                                                                 sx={{ ml: 1 }}
                                                                             />
                                                                         </Typography>
                                                                         <Typography>
-                                                                            <strong>Slip Prints:</strong> {application.slipPrintCount}
+                                                                            <strong>Slip Prints:</strong> {application?.slipPrintCount}
                                                                         </Typography>
                                                                         <Typography>
-                                                                            <strong>Admission Prints:</strong> {application.admissionPrintCount}
+                                                                            <strong>Admission Prints:</strong> {application?.admissionPrintCount}
                                                                         </Typography>
                                                                         <Typography>
-                                                                            <strong>Created:</strong> {formatDate(application.created_at)}
+                                                                            <strong>Created:</strong> {formatDate(application?.created_at)}
                                                                         </Typography>
                                                                         <Typography>
-                                                                            <strong>Last Updated:</strong> {formatDate(application.updated_at)}
+                                                                            <strong>Last Updated:</strong> {formatDate(application?.updated_at)}
                                                                         </Typography>
                                                                     </Paper>
                                                                 </Grid>
@@ -570,7 +649,7 @@ const Applications = () => {
                                         <Typography>
                                             <strong>Status:</strong> 
                                             <Chip 
-                                                label={currentApplication.status.replace('_', ' ')} 
+                                                label={filterOptions.statuses.find(opt => opt.value === currentApplication.status)?.label || currentApplication.status.replace('_', ' ')} 
                                                 color={getStatusColor(currentApplication.status)}
                                                 size="small"
                                                 sx={{ ml: 1 }}
@@ -700,8 +779,9 @@ const Applications = () => {
                                             })}
                                             label="Batch"
                                         >
-                                            <MenuItem value="1A">Batch 1A</MenuItem>
-                                            <MenuItem value="1B">Batch 1B</MenuItem>
+                                            {filterOptions.batches.map(batch => (
+                                                <MenuItem key={batch} value={batch}>Batch {batch}</MenuItem>
+                                            ))}
                                         </Select>
                                     </FormControl>
                                     <FormControl fullWidth>
@@ -714,7 +794,7 @@ const Applications = () => {
                                             })}
                                             label="Status"
                                         >
-                                            {statusOptions.map(option => (
+                                            {filterOptions.statuses.map(option => (
                                                 <MenuItem key={option.value} value={option.value}>{option.label}</MenuItem>
                                             ))}
                                         </Select>
@@ -782,6 +862,65 @@ const Applications = () => {
                     )}
                 </Box>
             </Modal>
+
+            {/* Change Batch Modal */}
+            <Dialog
+                open={batchChangeModalOpen}
+                onClose={handleCloseModal}
+                aria-labelledby="batch-change-dialog-title"
+                aria-describedby="batch-change-dialog-description"
+            >
+                <DialogTitle id="batch-change-dialog-title">
+                    Change Candidate Batch
+                </DialogTitle>
+                <DialogContent>
+                    {currentApplication && (
+                        <>
+                            <DialogContentText id="batch-change-dialog-description" mb={2}>
+                                Change batch for <strong>{formatFullName(currentApplication.users)}</strong> (Application ID: {currentApplication.applicationId})
+                            </DialogContentText>
+                            
+                           <FormControl fullWidth>
+    <InputLabel>Select New Batch</InputLabel>
+    <Select
+        value={selectedBatch}
+        onChange={(e) => setSelectedBatch(e.target.value)}
+        label="Select New Batch"
+    >
+        {availableBatches.map(batchId => (
+            <MenuItem key={batchId} value={batchId}>
+                Batch {batchId}
+            </MenuItem>
+        ))}
+    </Select>
+</FormControl>
+
+                            {error && (
+                                <Alert severity="error" sx={{ mt: 2 }}>
+                                    {error}
+                                </Alert>
+                            )}
+                        </>
+                    )}
+                </DialogContent>
+                <DialogActions>
+                    <Button 
+                        onClick={handleCloseModal} 
+                        color="secondary"
+                        disabled={isSubmitting}
+                    >
+                        Cancel
+                    </Button>
+                    <Button 
+                        onClick={handleBatchChangeSubmit} 
+                        color="primary"
+                        disabled={isSubmitting || !selectedBatch}
+                        startIcon={isSubmitting ? <CircularProgress size={20} color="inherit" /> : null}
+                    >
+                        {isSubmitting ? 'Updating...' : 'Change Batch'}
+                    </Button>
+                </DialogActions>
+            </Dialog>
         </DashboardCard>
     );
 };

@@ -24,7 +24,7 @@ import {
     LinearProgress
 } from '@mui/material';
 import DashboardCard from '@/app/(DashboardLayout)/components/shared/DashboardCard';
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import api from '../../../../lib/api';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
@@ -75,6 +75,34 @@ const Apply = () => {
     const subjects = ['Mathematics', 'English', 'Physics', 'Chemistry', 'Biology', 'Economics', 'Geography', 'Government'];
     const grades = ['A1', 'B2', 'B3', 'C4', 'C5', 'C6', 'D7', 'E8', 'F9'];
     const examTypes = ['WAEC', 'NECO', 'NABTEB', 'GCE'];
+
+// Check payment status
+const [isLoading, setIsLoading] = useState(true);
+   useEffect(() => {
+        const checkPaymentStatus = async () => {
+            setIsLoading(true);
+            try {
+                const response = await api.get('/application/status');
+                // setPaymentStatus(response.data.status);
+                // setApplicationId(response.data.applicationId);
+                
+                // Redirect to appropriate page based on payment status
+                if (response.data.status === 'payment_pending') {
+                    router.push('/dashboard/my-payments');
+                } else if (response.data.status === 'payment_completed') {
+                    router.push('/dashboard/my-exam-slip');
+                }
+                // If status is 'not_submitted', we remain on this page
+            } catch (error: any) {
+                setError(error.response?.data?.message || 'Failed to check payment status');
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        checkPaymentStatus();
+    }, [router]);
+
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
@@ -598,7 +626,7 @@ const Apply = () => {
                                 </Button>
                             </label>
                             <Typography variant="body2" color="textSecondary">
-                                (Maximum size: 2MB, Recommended: 300x300 pixels)
+                                (Maximum size: 500KB, Recommended: 300x300 pixels)
                             </Typography>
                         </Box>
                     </CardContent>

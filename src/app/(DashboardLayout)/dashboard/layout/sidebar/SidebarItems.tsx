@@ -14,7 +14,7 @@ interface SidebarItemsProps {
 const MENU_CONFIG: Record<string, any[]> = {
   admin: [
     // { id: "dashboard", title: "Dashboard", icon: "dashboard", href: "/admin/dashboard" },
-    { subheader: "Admin Dashboard" },
+    { subheader: "Admin Dashboard", href: "/dashboard", id: 'admin' },
     {
       id: "users",
       title: "JAMB Data",
@@ -34,10 +34,17 @@ const MENU_CONFIG: Record<string, any[]> = {
       href: "/dashboard/batches",
     },
        {
-      id: "batched-applicants",
-      title: "Batched Applicants",
+      id: "rebatched-applicants",
+      title: "Rebatched Applicants",
       icon: IconRecycleOff,
-      href: "/dashboard/batched-applicants",
+      href: "/dashboard/rebatched-applicants",
+    },
+
+      {
+      id: "payments",
+      title: "Payments",
+      icon: IconShoppingBag,
+      href: "/dashboard/payments",
     },
        {
       id: "verification",
@@ -52,12 +59,7 @@ const MENU_CONFIG: Record<string, any[]> = {
       href: "/dashboard/attendance",
     },
 
-       {
-      id: "payments",
-      title: "Payments",
-      icon: IconShoppingBag,
-      href: "/dashboard/payments",
-    },
+     
 
        {
       id: "admissions",
