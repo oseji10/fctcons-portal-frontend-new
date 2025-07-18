@@ -14,6 +14,12 @@ import {
   MenuItem,
   TextField,
   Grid,
+
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogContentText,
+  DialogActions,
 } from "@mui/material";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -26,7 +32,12 @@ const Register2 = () => {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [errors, setErrors] = useState<Record<string, string>>({});
   const [success, setSuccess] = useState<string | null>(null);
+
+  const [openSuccessModal, setOpenSuccessModal] = useState(false);
+const [successMessage, setSuccessMessage] = useState("");
+
   const [applicationType, setApplicationType] = useState("");
   const [jambId, setJambId] = useState("");
   const [validatingJamb, setValidatingJamb] = useState(false);
@@ -115,6 +126,7 @@ const Register2 = () => {
     e.preventDefault();
     setIsSubmitting(true);
     setError(null);
+     setErrors({});
 
     try {
       const payload = {
@@ -136,14 +148,23 @@ const Register2 = () => {
       );
 
       if (response.data.status === "success") {
-        setSuccess("Registration successful! Redirecting to login...");
-        setTimeout(() => router.push("/authentication/login"), 2000);
+        // setSuccess("Registration successful! Redirecting to login...");
+        // setTimeout(() => router.push("/authentication/login"), 2000);
+        setSuccessMessage(response.data.message || "Registration successful!");
+      setOpenSuccessModal(true);
       } else {
         setError(response.data.message || "Registration failed");
       }
     } catch (error) {
-      console.error('Registration failed:', error);
-      setError(error.response?.data?.message || 'Registration failed. Please try again.');
+      console.error('Registration failed:', error);if (error.response?.data?.errors) {
+      // Handle validation errors from backend
+      setErrors(error.response.data.errors);
+    } else if (error.response?.data?.message) {
+      // Handle other error messages
+      setError(error.response.data.message);
+    } else {
+      setError('Registration failed. Please try again.');
+    }
     } finally {
       setIsSubmitting(false);
     }
@@ -368,6 +389,8 @@ const Register2 = () => {
                   fullWidth
                   required
                   variant="outlined"
+                  error={!!errors.email}
+                  helperText={errors.email}
                 />
 
                 <TextField
@@ -387,6 +410,8 @@ const Register2 = () => {
                   fullWidth
                   required
                   variant="outlined"
+                  error={!!errors.confirmPassword}
+                  helperText={errors.confirmPassword}
                   InputProps={{
                     endAdornment: (
                       <InputAdornment position="end">
@@ -473,6 +498,40 @@ const Register2 = () => {
           </Stack>
         </form>
       </Box>
+
+      {/* Success Modal */}
+<Dialog
+  open={openSuccessModal}
+  onClose={() => {
+    setOpenSuccessModal(false);
+    router.push("/authentication/login");
+  }}
+  aria-labelledby="alert-dialog-title"
+  aria-describedby="alert-dialog-description"
+>
+  <DialogTitle id="alert-dialog-title" sx={{ fontWeight: 700 }}>
+    Registration Successful
+  </DialogTitle>
+  <DialogContent>
+    <DialogContentText id="alert-dialog-description">
+      {successMessage}
+    </DialogContentText>
+  </DialogContent>
+  <DialogActions>
+    <Button 
+      onClick={() => {
+        setOpenSuccessModal(false);
+        router.push("/authentication/login");
+      }}
+      color="primary"
+      autoFocus
+      variant="contained"
+    >
+      Continue to login
+    </Button>
+  </DialogActions>
+</Dialog>
+
     </Box>
   );
 };

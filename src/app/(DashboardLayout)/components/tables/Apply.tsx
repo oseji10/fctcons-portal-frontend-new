@@ -61,13 +61,28 @@ const Apply = () => {
     const phone = getPhoneNumber();
 
     // Form data state
-    const [formData, setFormData] = useState({
-        gender: "",
-        maritalStatus: "",
-        dateOfBirth: "",
-        olevelResults: Array(5).fill({ subject: "", grade: "", examYear: "", examType: "" }),
-        photo: null as File | null,
-    });
+    // const [formData, setFormData] = useState({
+    //     gender: "",
+    //     maritalStatus: "",
+    //     dateOfBirth: "",
+    //     olevelResults: Array(5).fill({ subject: "", grade: "", examYear: "", examType: "" }),
+    //     photo: null as File | null,
+    // });
+
+    // Update the initial formData state
+const [formData, setFormData] = useState({
+    gender: "",
+    maritalStatus: "",
+    dateOfBirth: "",
+    olevelResults: [
+        { subject: "Mathematics", grade: "", examYear: "", examType: "" },
+        { subject: "English", grade: "", examYear: "", examType: "" },
+        { subject: "Biology", grade: "", examYear: "", examType: "" },
+        { subject: "Chemistry", grade: "", examYear: "", examType: "" },
+        { subject: "Physics", grade: "", examYear: "", examType: "" },
+    ],
+    photo: null as File | null,
+});
 
     const [previewImage, setPreviewImage] = useState<string | null>(null);
 
@@ -115,12 +130,19 @@ const [isLoading, setIsLoading] = useState(true);
         setFormData({ ...formData, olevelResults: newResults });
     };
 
+    // const addOlevelSubject = () => {
+    //     setFormData({
+    //         ...formData,
+    //         olevelResults: [...formData.olevelResults, { subject: "", grade: "", examYear: "", examType: "" }],
+    //     });
+    // };
+
     const addOlevelSubject = () => {
-        setFormData({
-            ...formData,
-            olevelResults: [...formData.olevelResults, { subject: "", grade: "", examYear: "", examType: "" }],
-        });
-    };
+    setFormData({
+        ...formData,
+        olevelResults: [...formData.olevelResults, { subject: "", grade: "", examYear: "", examType: "" }],
+    });
+};
 
     const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files && e.target.files.length > 0) {
@@ -155,6 +177,16 @@ const [isLoading, setIsLoading] = useState(true);
     };
 
     const validateOlevelResults = () => {
+        const requiredSubjects = ["Mathematics", "English", "Biology", "Chemistry", "Physics"];
+    const missingRequiredFields = formData.olevelResults
+        .filter(r => requiredSubjects.includes(r.subject))
+        .some(r => !r.grade || !r.examYear || !r.examType);
+
+    if (missingRequiredFields) {
+        setError('Please complete all required subjects (Mathematics, English, Biology, Chemistry, Physics) with grade, exam year and exam type.');
+        return false;
+    }
+
         const validResults = formData.olevelResults.filter(
             (r) => r.subject && r.grade && r.examYear && r.examType
         );
@@ -520,65 +552,71 @@ const [isLoading, setIsLoading] = useState(true);
                                 </Grid>
                             </Grid>
                             
-                            {formData.olevelResults.map((result, index) => (
-                                <Grid container spacing={2} key={index} sx={{ mb: 2 }}>
-                                    <Grid item xs={3}>
-                                        <FormControl fullWidth>
-                                            <InputLabel>Subject</InputLabel>
-                                            <Select
-                                                value={result.subject}
-                                                onChange={(e) => handleOlevelChange(index, 'subject', e.target.value)}
-                                                label="Subject"
-                                            >
-                                                <MenuItem value="">Select Subject</MenuItem>
-                                                {subjects.map(sub => (
-                                                    <MenuItem key={sub} value={sub}>{sub}</MenuItem>
-                                                ))}
-                                            </Select>
-                                        </FormControl>
-                                    </Grid>
-                                    <Grid item xs={2}>
-                                        <FormControl fullWidth>
-                                            <InputLabel>Grade</InputLabel>
-                                            <Select
-                                                value={result.grade}
-                                                onChange={(e) => handleOlevelChange(index, 'grade', e.target.value)}
-                                                label="Grade"
-                                            >
-                                                <MenuItem value="">Select Grade</MenuItem>
-                                                {grades.map(grade => (
-                                                    <MenuItem key={grade} value={grade}>{grade}</MenuItem>
-                                                ))}
-                                            </Select>
-                                        </FormControl>
-                                    </Grid>
-                                    <Grid item xs={3}>
-                                        <TextField
-                                            fullWidth
-                                            type="number"
-                                            value={result.examYear}
-                                            onChange={(e) => handleOlevelChange(index, 'examYear', e.target.value)}
-                                            placeholder="e.g., 2023"
-                                            inputProps={{ min: 1980, max: new Date().getFullYear() }}
-                                        />
-                                    </Grid>
-                                    <Grid item xs={4}>
-                                        <FormControl fullWidth>
-                                            <InputLabel>Exam Type</InputLabel>
-                                            <Select
-                                                value={result.examType}
-                                                onChange={(e) => handleOlevelChange(index, 'examType', e.target.value)}
-                                                label="Exam Type"
-                                            >
-                                                <MenuItem value="">Select Exam Type</MenuItem>
-                                                {examTypes.map(type => (
-                                                    <MenuItem key={type} value={type}>{type}</MenuItem>
-                                                ))}
-                                            </Select>
-                                        </FormControl>
-                                    </Grid>
-                                </Grid>
-                            ))}
+                        
+{formData.olevelResults.map((result, index) => (
+    <Grid container spacing={2} key={index} sx={{ mb: 2 }}>
+        <Grid item xs={3}>
+            <FormControl fullWidth>
+                <InputLabel>Subject</InputLabel>
+                <Select
+                    value={result.subject}
+                    onChange={(e) => handleOlevelChange(index, 'subject', e.target.value)}
+                    label="Subject"
+                    disabled={["Mathematics", "English", "Biology", "Chemistry", "Physics"].includes(result.subject)}
+                >
+                    <MenuItem value="">Select Subject</MenuItem>
+                    {subjects.map(sub => (
+                        <MenuItem key={sub} value={sub}>{sub}</MenuItem>
+                    ))}
+                </Select>
+            </FormControl>
+        </Grid>
+        {/* Rest of the fields remain editable */}
+        <Grid item xs={2}>
+            <FormControl fullWidth>
+                <InputLabel>Grade</InputLabel>
+                <Select
+                    value={result.grade}
+                    onChange={(e) => handleOlevelChange(index, 'grade', e.target.value)}
+                    label="Grade"
+                    required={["Mathematics", "English", "Biology", "Chemistry", "Physics"].includes(result.subject)}
+                >
+                    <MenuItem value="">Select Grade</MenuItem>
+                    {grades.map(grade => (
+                        <MenuItem key={grade} value={grade}>{grade}</MenuItem>
+                    ))}
+                </Select>
+            </FormControl>
+        </Grid>
+        <Grid item xs={3}>
+            <TextField
+                fullWidth
+                type="number"
+                value={result.examYear}
+                onChange={(e) => handleOlevelChange(index, 'examYear', e.target.value)}
+                placeholder="e.g., 2023"
+                required={["Mathematics", "English", "Biology", "Chemistry", "Physics"].includes(result.subject)}
+                inputProps={{ min: 1980, max: new Date().getFullYear() }}
+            />
+        </Grid>
+        <Grid item xs={4}>
+            <FormControl fullWidth>
+                <InputLabel>Exam Type</InputLabel>
+                <Select
+                    value={result.examType}
+                    onChange={(e) => handleOlevelChange(index, 'examType', e.target.value)}
+                    label="Exam Type"
+                    required={["Mathematics", "English", "Biology", "Chemistry", "Physics"].includes(result.subject)}
+                >
+                    <MenuItem value="">Select Exam Type</MenuItem>
+                    {examTypes.map(type => (
+                        <MenuItem key={type} value={type}>{type}</MenuItem>
+                    ))}
+                </Select>
+            </FormControl>
+        </Grid>
+    </Grid>
+))}
                             
                             <Button
                                 onClick={addOlevelSubject}
@@ -670,44 +708,65 @@ const [isLoading, setIsLoading] = useState(true);
                             </Grid>
 
                             <Grid item xs={12}>
-                                <Typography variant="subtitle1" gutterBottom>
-                                    O'Level Results
-                                </Typography>
-                                <Paper elevation={0} sx={{ p: 2, mb: 2, border: '1px solid #eee' }}>
-                                    <Grid container spacing={2} sx={{ mb: 1 }}>
-                                        <Grid item xs={3}>
-                                            <Typography fontWeight="bold">Subject</Typography>
-                                        </Grid>
-                                        <Grid item xs={2}>
-                                            <Typography fontWeight="bold">Grade</Typography>
-                                        </Grid>
-                                        <Grid item xs={3}>
-                                            <Typography fontWeight="bold">Exam Year</Typography>
-                                        </Grid>
-                                        <Grid item xs={4}>
-                                            <Typography fontWeight="bold">Exam Type</Typography>
-                                        </Grid>
-                                    </Grid>
-                                    {formData.olevelResults
-                                        .filter(r => r.subject && r.grade && r.examYear && r.examType)
-                                        .map((result, index) => (
-                                            <Grid container spacing={2} key={index} sx={{ mb: 1 }}>
-                                                <Grid item xs={3}>
-                                                    <Typography>{result.subject}</Typography>
-                                                </Grid>
-                                                <Grid item xs={2}>
-                                                    <Typography>{result.grade}</Typography>
-                                                </Grid>
-                                                <Grid item xs={3}>
-                                                    <Typography>{result.examYear}</Typography>
-                                                </Grid>
-                                                <Grid item xs={4}>
-                                                    <Typography>{result.examType}</Typography>
-                                                </Grid>
-                                            </Grid>
-                                        ))}
-                                </Paper>
+                    <Typography variant="subtitle1" gutterBottom>
+                        O'Level Results
+                        <Typography variant="caption" display="block" color="text.secondary">
+                            * Required subjects
+                        </Typography>
+                    </Typography>
+                    <Paper elevation={0} sx={{ p: 2, mb: 2, border: '1px solid #eee' }}>
+                        <Grid container spacing={2} sx={{ mb: 1 }}>
+                            <Grid item xs={3}>
+                                <Typography fontWeight="bold">Subject</Typography>
                             </Grid>
+                            <Grid item xs={2}>
+                                <Typography fontWeight="bold">Grade</Typography>
+                            </Grid>
+                            <Grid item xs={3}>
+                                <Typography fontWeight="bold">Exam Year</Typography>
+                            </Grid>
+                            <Grid item xs={4}>
+                                <Typography fontWeight="bold">Exam Type</Typography>
+                            </Grid>
+                        </Grid>
+                        
+                        {formData.olevelResults
+                            .filter(r => r.subject && r.grade && r.examYear && r.examType)
+                            .map((result, index) => (
+                                <Grid 
+                                    container 
+                                    spacing={2} 
+                                    key={index} 
+                                    sx={{ 
+                                        mb: 1,
+                                        backgroundColor: ["Mathematics", "English", "Biology", "Chemistry", "Physics"].includes(result.subject) 
+                                            ? 'rgba(25, 118, 210, 0.08)' 
+                                            : 'transparent',
+                                        p: 1,
+                                        borderRadius: 1
+                                    }}
+                                >
+                                    <Grid item xs={3}>
+                                        <Typography>
+                                            {result.subject}
+                                            {["Mathematics", "English", "Biology", "Chemistry", "Physics"].includes(result.subject) && (
+                                                <Typography component="span" color="error" sx={{ ml: 0.5 }}>*</Typography>
+                                            )}
+                                        </Typography>
+                                    </Grid>
+                                    <Grid item xs={2}>
+                                        <Typography>{result.grade}</Typography>
+                                    </Grid>
+                                    <Grid item xs={3}>
+                                        <Typography>{result.examYear}</Typography>
+                                    </Grid>
+                                    <Grid item xs={4}>
+                                        <Typography>{result.examType}</Typography>
+                                    </Grid>
+                                </Grid>
+                            ))}
+                    </Paper>
+                </Grid>
 
                             {previewImage && (
                                 <Grid item xs={12}>

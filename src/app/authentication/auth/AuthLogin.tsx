@@ -115,7 +115,7 @@ const AuthLogin = ({ title, subtitle, subtext }: loginType) => {
         <Stack spacing={3}>
           <Box>
             <Typography variant="subtitle1" fontWeight={600} component="label" htmlFor="username" mb="8px">
-              Username
+              Email
             </Typography>
             <CustomTextField
               variant="outlined"
@@ -124,7 +124,7 @@ const AuthLogin = ({ title, subtitle, subtext }: loginType) => {
               onChange={(e) => setUsername(e.target.value)}
               disabled={isSubmitting}
               id="username"
-              placeholder="Enter your username"
+              placeholder="Enter your email"
             />
           </Box>
 

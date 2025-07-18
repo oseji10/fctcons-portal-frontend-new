@@ -203,7 +203,7 @@ const AuthLogin = () => {
 
             <Typography textAlign="center" sx={{ pb: 2 }}>
               Don't have an account?{' '}
-              <Link href="/authentication/register" passHref>
+              <Link href="/authentication/create-account" passHref>
                 <Typography 
                   component="a"
                   sx={{
