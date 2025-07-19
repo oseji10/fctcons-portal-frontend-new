@@ -50,6 +50,7 @@ const Apply = () => {
     const [rrr, setRrr] = useState<string | null>(null);
     const router = useRouter();
     const [isPaymentVerified, setIsPaymentVerified] = useState(false);
+    const [isSubmitted, setIsSubmitted] = useState(false);
 
     const [isDownloading, setIsDownloading] = useState(false);
     const [downloadProgress, setDownloadProgress] = useState(0);
@@ -277,6 +278,7 @@ const [isLoading, setIsLoading] = useState(true);
             if (response.data.status === 'success') {
                 setApplicationId(response.data.applicationId);
                 setSuccess('Application submitted successfully!');
+                setIsSubmitted(true);
                 handleNext();
             } else {
                 throw new Error(response.data.message || 'Submission failed');
@@ -930,7 +932,7 @@ const [isLoading, setIsLoading] = useState(true);
             <Box sx={{ display: 'flex', justifyContent: 'space-between', pt: 2 }}>
                 <Button
                     color="inherit"
-                    disabled={activeStep === 0}
+                    disabled={activeStep === 0 || isSubmitted} 
                     onClick={handleBack}
                     sx={{ mr: 1 }}
                 >
