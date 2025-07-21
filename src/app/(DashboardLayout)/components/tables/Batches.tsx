@@ -22,6 +22,8 @@ import {
     Pagination,
     LinearProgress,
     Alert,
+    FormControlLabel,
+    Switch,
 } from '@mui/material';
 import DashboardCard from '@/app/(DashboardLayout)/components/shared/DashboardCard';
 import { useEffect, useState } from "react";
@@ -39,6 +41,7 @@ interface Batch {
     examTime: string;
     capacity: string;
     status: string;
+    isVerificationActive: boolean;
     created_at: string;
     updated_at: string;
     deleted_at: string | null;
@@ -71,27 +74,34 @@ const Batches = () => {
         { value: 'completed', label: 'Completed' }
     ];
 
-    const fetchData = async () => {
-        setIsLoading(true);
-        try {
-            const response = await api.get('/batches', {
-                params: { 
-                    page: currentPage, 
-                    per_page: perPage,
-                    search: searchQuery || undefined
-                }
-            });
-            setBatches(response.data.data);
-            setTotalPages(response.data.last_page);
-            setTotalRecords(response.data.total);
-            setError(null);
-        } catch (error: any) {
-            setError(error.response?.data?.message || 'Failed to fetch batches');
-            console.error('Fetch error:', error);
-        } finally {
-            setIsLoading(false);
-        }
-    };
+  const fetchData = async () => {
+    setIsLoading(true);
+    try {
+        const response = await api.get('/batches', {
+            params: { 
+                page: currentPage, 
+                per_page: perPage,
+                search: searchQuery || undefined
+            }
+        });
+        
+        // Convert isVerificationActive to boolean
+        const convertedBatches = response.data.data.map((batch: any) => ({
+            ...batch,
+            isVerificationActive: batch.isVerificationActive === 1
+        }));
+        
+        setBatches(convertedBatches);
+        setTotalPages(response.data.last_page);
+        setTotalRecords(response.data.total);
+        setError(null);
+    } catch (error: any) {
+        setError(error.response?.data?.message || 'Failed to fetch batches');
+        console.error('Fetch error:', error);
+    } finally {
+        setIsLoading(false);
+    }
+};
 
     useEffect(() => {
         fetchData();
@@ -242,6 +252,39 @@ const Batches = () => {
         return `${new Date(date).toLocaleDateString()} at ${time}`;
     };
 
+
+const toggleVerificationStatus = async (batch: Batch) => {
+    const newStatus = !batch.isVerificationActive;
+    try {
+        const response = await api.patch(`/batches/${batch.batchId}/verification`, {
+            isVerificationActive: newStatus ? "1" : "0"
+        });
+        
+        if (response.status >= 200 && response.status < 300) {
+            // Update all batches - set current to newStatus, others to false
+            const updatedBatches = batches.map(b => ({
+                ...b,
+                isVerificationActive: b.batchId === batch.batchId ? newStatus : false
+            }));
+            setBatches(updatedBatches);
+        } else {
+            throw new Error(response.data?.message || 'Status update failed');
+        }
+    } catch (error: any) {
+        setError(
+            error.response?.data?.message || 
+            error.message || 
+            'Failed to update verification status'
+        );
+        // Revert on error
+        const revertedBatches = batches.map(b => 
+            b.batchId === batch.batchId ? { ...b, isVerificationActive: batch.isVerificationActive } : b
+        );
+        setBatches(revertedBatches);
+    }
+};
+
+
     return (
         <DashboardCard title="Batches">
             <Box mb={2} display="flex" justifyContent="space-between" alignItems="center">
@@ -369,16 +412,33 @@ const Batches = () => {
                                             </Typography>
                                         </TableCell>
                                         <TableCell>
-                                            <IconButton onClick={() => handleOpenModal(batch)}>
-                                                <EditIcon />
-                                            </IconButton>
-                                            <IconButton 
-                                                onClick={() => handleOpenDeleteDialog(batch)}
-                                                disabled={isSubmitting}
-                                            >
-                                                <DeleteIcon />
-                                            </IconButton>
-                                        </TableCell>
+                            <Typography color={batch.isVerificationActive ? "success.main" : "error.main"}>
+                                {batch.isVerificationActive ? "Verification Active" : "Verification Inactive"}
+                            </Typography>
+                        </TableCell>
+                         <TableCell>
+                            <IconButton onClick={() => handleOpenModal(batch)}>
+                                <EditIcon />
+                            </IconButton>
+                            <IconButton 
+                                onClick={() => handleOpenDeleteDialog(batch)}
+                                disabled={isSubmitting}
+                            >
+                                <DeleteIcon />
+                            </IconButton>
+                            <FormControlLabel
+                                control={
+                                    <Switch
+                                        checked={batch.isVerificationActive}
+                                        onChange={() => toggleVerificationStatus(batch)}
+                                        color="primary"
+                                    />
+                                }
+                                label=""
+                                labelPlacement="start"
+                            />
+                        </TableCell>
+                                        
                                     </TableRow>
                                 ))}
                             </TableBody>

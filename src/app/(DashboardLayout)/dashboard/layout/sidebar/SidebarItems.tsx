@@ -4,7 +4,7 @@ import { Box, List, Typography } from "@mui/material";
 import NavItem from "./NavItem";
 import NavGroup from "./NavGroup/NavGroup";
 import { getApplicationType, getRole } from "../../../../../lib/auth";
-import { IconCreditCard, IconDeviceDesktop, IconFilePencil, IconFingerprint, IconPrinter, IconRecycle, IconRecycleOff, IconSchool, IconShoppingBag, IconUsersGroup, IconVersionsFilled } from "@tabler/icons-react";
+import { IconBuildingArch, IconCreditCard, IconDeviceDesktop, IconFilePencil, IconFingerprint, IconPrinter, IconRecycle, IconRecycleOff, IconSchool, IconShoppingBag, IconUsersGroup, IconVersionsFilled } from "@tabler/icons-react";
 
 interface SidebarItemsProps {
   toggleMobileSidebar: (event: React.MouseEvent<HTMLElement>) => void;
@@ -32,6 +32,12 @@ const MENU_CONFIG: Record<string, any[]> = {
       title: "Batches",
       icon: IconRecycle,
       href: "/dashboard/batches",
+    },
+     {
+      id: "halls",
+      title: "Halls",
+      icon: IconBuildingArch,
+      href: "/dashboard/halls",
     },
        {
       id: "rebatched-applicants",
@@ -65,7 +71,7 @@ const MENU_CONFIG: Record<string, any[]> = {
       id: "admissions",
       title: "Admissions",
       icon: IconSchool,
-      href: "/dashboard/admissions",
+      href: "#",
     },
   ],
   candidate: [

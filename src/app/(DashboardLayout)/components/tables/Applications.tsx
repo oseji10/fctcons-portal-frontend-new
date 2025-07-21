@@ -162,9 +162,35 @@ const [availableBatches, setAvailableBatches] = useState<string[]>([]);
     }
 };
 
+
+const fetchAvailableBatchesMain = async () => {
+    try {
+        const response = await api.get('/batches'); // Or your specific endpoint
+        if (response.data && Array.isArray(response.data)) {
+            // If response is an array of batch objects with batchId property
+            const batchIds = response.data.map(batch => batch.batchId);
+            setAvailableBatches(batchIds);
+            
+            // Also update the filterOptions.batches
+            filterOptions.batches = batchIds.length > 0 ? batchIds : [];
+        } else if (response.data && response.data.data) {
+            // If response is paginated
+            const batchIds = response.data.data.map(batch => batch.batchId);
+            setAvailableBatches(batchIds);
+            filterOptions.batches = batchIds.length > 0 ? batchIds : [];
+        }
+    } catch (error) {
+        console.error('Error fetching batches:', error);
+        // Optionally set some default batches if the API fails
+        setAvailableBatches([]);
+        filterOptions.batches = [];
+    }
+};
+
     useEffect(() => {
         fetchData();
         fetchAvailableBatches();
+        fetchAvailableBatchesMain();
     }, [currentPage]); // Only trigger fetch on page change
 
     const handlePageChange = (event: React.ChangeEvent<unknown>, page: number) => {
@@ -316,21 +342,21 @@ const [availableBatches, setAvailableBatches] = useState<string[]>([]);
                         </Select>
                     </FormControl>
 
-                    <FormControl sx={{ minWidth: 200, flex: 1 }}>
-                        <InputLabel>Filter by Batch</InputLabel>
-                        <Select
-                            value={batchFilter}
-                            onChange={(e) => setBatchFilter(e.target.value)}
-                            label="Filter by Batch"
-                        >
-                            <MenuItem value="">All Batches</MenuItem>
-                            {filterOptions.batches.map(batch => (
-                                <MenuItem key={batch} value={batch}>
-                                    Batch {batch}
-                                </MenuItem>
-                            ))}
-                        </Select>
-                    </FormControl>
+                                  <FormControl sx={{ minWidth: 200, flex: 1 }}>
+    <InputLabel>Filter by Batch</InputLabel>
+    <Select
+        value={batchFilter}
+        onChange={(e) => setBatchFilter(e.target.value)}
+        label="Filter by Batch"
+    >
+        <MenuItem value="">All Batches</MenuItem>
+        {availableBatches.map(batchId => (
+            <MenuItem key={batchId} value={batchId}>
+                Batch {batchId}
+            </MenuItem>
+        ))}
+    </Select>
+</FormControl>
 
                     <TextField
                     sx={{ minWidth: 300, flex: 1 }}

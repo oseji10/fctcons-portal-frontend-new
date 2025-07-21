@@ -255,7 +255,7 @@ const RebatchedApplicants = () => {
                                     </TableCell>
                                     <TableCell>
                                         <Typography variant="subtitle2" fontWeight={600}>
-                                            Status
+                                            Rebatched By
                                         </Typography>
                                     </TableCell>
                                     <TableCell>
@@ -305,11 +305,12 @@ const RebatchedApplicants = () => {
                                                     </Typography>
                                                 </TableCell>
                                                 <TableCell>
-                                                    <Chip 
+                                                    {/* <Chip 
                                                         label={application.applicant.status.replace('_', ' ')} 
                                                         color={getStatusColor(application.applicant.status)}
                                                         size="small"
-                                                    />
+                                                    /> */}
+                                                    {application.rebatched_by?.firstName} {application.rebatched_by?.lastName}
                                                 </TableCell>
                                                 <TableCell>
                                                     <IconButton onClick={() => handleOpenViewModal(application)}>
