@@ -9,6 +9,7 @@ export interface AnalyticsData {
   total?: string;
   batched_candidates?: string;
   rebatched_candidates?: string;
+  total_batches?: string;
   [key: string]: any;
 }
 

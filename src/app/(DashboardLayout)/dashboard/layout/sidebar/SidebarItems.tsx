@@ -4,7 +4,7 @@ import { Box, List, Typography } from "@mui/material";
 import NavItem from "./NavItem";
 import NavGroup from "./NavGroup/NavGroup";
 import { getApplicationType, getRole } from "../../../../../lib/auth";
-import { IconBuildingArch, IconCreditCard, IconDeviceDesktop, IconFilePencil, IconFingerprint, IconPrinter, IconRecycle, IconRecycleOff, IconSchool, IconShoppingBag, IconUsersGroup, IconVersionsFilled } from "@tabler/icons-react";
+import { IconBuildingArch, IconCreditCard, IconDashboard, IconDeviceDesktop, IconFilePencil, IconFingerprint, IconPrinter, IconRecycle, IconRecycleOff, IconSchool, IconShoppingBag, IconUsersGroup, IconVersionsFilled } from "@tabler/icons-react";
 
 interface SidebarItemsProps {
   toggleMobileSidebar: (event: React.MouseEvent<HTMLElement>) => void;
@@ -15,6 +15,12 @@ const MENU_CONFIG: Record<string, any[]> = {
   admin: [
     // { id: "dashboard", title: "Dashboard", icon: "dashboard", href: "/admin/dashboard" },
     { subheader: "Admin Dashboard", href: "/dashboard", id: 'admin' },
+    {
+      id: "dashboard",
+      title: "Dashboard",
+      icon: IconDashboard,
+      href: "/dashboard",
+    },
     {
       id: "users",
       title: "JAMB Data",
@@ -78,6 +84,12 @@ const MENU_CONFIG: Record<string, any[]> = {
     // { id: "overview", title: "Overview", icon: "home", href: "/client/overview" },
     { subheader: "Candidate Dashboard" },
     {
+      id: "dashboard",
+      title: "Dashboard",
+      icon: IconDashboard,
+      href: "/dashboard",
+    },
+    {
       id: "applications",
       title: "Apply Now",
       icon: IconFilePencil,
@@ -100,6 +112,12 @@ const MENU_CONFIG: Record<string, any[]> = {
     { id: "panel", title: "Panel", icon: "work", href: "/staff/panel" },
     {
       subheader: "Operations",
+    },
+    {
+      id: "dashboard",
+      title: "Dashboard",
+      icon: IconDashboard,
+      href: "/dashboard",
     },
     {
       id: "tasks",

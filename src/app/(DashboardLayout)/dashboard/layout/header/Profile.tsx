@@ -57,7 +57,7 @@ const Profile = () => {
 
   return (
     <Box>
-      <IconButton
+      {/* <IconButton
         size="large"
         aria-label="show notifications"
         color="inherit"
@@ -67,8 +67,10 @@ const Profile = () => {
         <Badge variant="dot" color="primary">
           <IconBellRinging size="21" stroke="1.5" />
         </Badge>
-      </IconButton>
-      <b>{fullname} | {role} </b>
+      </IconButton> */}
+      <b>{fullname} 
+        {/* | {role}  */}
+        </b>
       <IconButton
         size="large"
         aria-label="show profile menu"
@@ -83,7 +85,7 @@ const Profile = () => {
         onClick={handleClick2}
       >
         <Avatar
-          src="/images/profile/user-1.jpg"
+          src="/images/avatar.png"
           alt="profile image"
           sx={{
             width: 35,
@@ -114,7 +116,7 @@ const Profile = () => {
           </ListItemIcon>
           <ListItemText>My Profile</ListItemText>
         </MenuItem>
-        <MenuItem>
+        {/* <MenuItem>
           <ListItemIcon>
             <IconMail width={20} />
           </ListItemIcon>
@@ -125,7 +127,7 @@ const Profile = () => {
             <IconListCheck width={20} />
           </ListItemIcon>
           <ListItemText>My Tasks</ListItemText>
-        </MenuItem>
+        </MenuItem> */}
         <Box mt={1} py={1} px={2}>
           <Button
             variant="outlined"

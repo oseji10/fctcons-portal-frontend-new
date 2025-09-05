@@ -36,7 +36,7 @@ const RecentPayments = () => {
   useEffect(() => {
     const fetchPayments = async () => {
       try {
-        const response = await api.get('/all-payments');
+        const response = await api.get('/payments/recent');
         setPayments(response.data);
       } catch (err) {
         console.error('Failed to fetch recent payments', err);

@@ -66,7 +66,7 @@ const Batches = () => {
     const [totalPages, setTotalPages] = useState(1);
     const [totalRecords, setTotalRecords] = useState(0);
     const [searchQuery, setSearchQuery] = useState("");
-    const perPage = 10;
+    const [recordsPerPage, setRecordsPerPage] = useState(10);
 
     const statusOptions = [
         { value: 'active', label: 'Active' },
@@ -74,41 +74,48 @@ const Batches = () => {
         { value: 'completed', label: 'Completed' }
     ];
 
-  const fetchData = async () => {
-    setIsLoading(true);
-    try {
-        const response = await api.get('/batches', {
-            params: { 
-                page: currentPage, 
-                per_page: perPage,
-                search: searchQuery || undefined
-            }
-        });
-        
-        // Convert isVerificationActive to boolean
-        const convertedBatches = response.data.data.map((batch: any) => ({
-            ...batch,
-            isVerificationActive: batch.isVerificationActive === 1
-        }));
-        
-        setBatches(convertedBatches);
-        setTotalPages(response.data.last_page);
-        setTotalRecords(response.data.total);
-        setError(null);
-    } catch (error: any) {
-        setError(error.response?.data?.message || 'Failed to fetch batches');
-        console.error('Fetch error:', error);
-    } finally {
-        setIsLoading(false);
-    }
-};
+    const recordsPerPageOptions = [10, 20, 50, 100];
+
+    const fetchData = async () => {
+        setIsLoading(true);
+        try {
+            const response = await api.get('/batches', {
+                params: { 
+                    page: currentPage, 
+                    per_page: recordsPerPage,
+                    search: searchQuery || undefined
+                }
+            });
+            
+            // Convert isVerificationActive to boolean
+            const convertedBatches = response.data.data.map((batch: any) => ({
+                ...batch,
+                isVerificationActive: batch.isVerificationActive === 1
+            }));
+            
+            setBatches(convertedBatches);
+            setTotalPages(response.data.last_page);
+            setTotalRecords(response.data.total);
+            setError(null);
+        } catch (error: any) {
+            setError(error.response?.data?.message || 'Failed to fetch batches');
+            console.error('Fetch error:', error);
+        } finally {
+            setIsLoading(false);
+        }
+    };
 
     useEffect(() => {
         fetchData();
-    }, [currentPage, searchQuery]);
+    }, [currentPage, searchQuery, recordsPerPage]);
 
     const handlePageChange = (event: React.ChangeEvent<unknown>, page: number) => {
         setCurrentPage(page);
+    };
+
+    const handleRecordsPerPageChange = (event: React.ChangeEvent<{ value: unknown }>) => {
+        setRecordsPerPage(Number(event.target.value));
+        setCurrentPage(1); // Reset to first page when changing records per page
     };
 
     const handleOpenModal = (batch?: Batch) => {
@@ -252,38 +259,36 @@ const Batches = () => {
         return `${new Date(date).toLocaleDateString()} at ${time}`;
     };
 
-
-const toggleVerificationStatus = async (batch: Batch) => {
-    const newStatus = !batch.isVerificationActive;
-    try {
-        const response = await api.patch(`/batches/${batch.batchId}/verification`, {
-            isVerificationActive: newStatus ? "1" : "0"
-        });
-        
-        if (response.status >= 200 && response.status < 300) {
-            // Update all batches - set current to newStatus, others to false
-            const updatedBatches = batches.map(b => ({
-                ...b,
-                isVerificationActive: b.batchId === batch.batchId ? newStatus : false
-            }));
-            setBatches(updatedBatches);
-        } else {
-            throw new Error(response.data?.message || 'Status update failed');
+    const toggleVerificationStatus = async (batch: Batch) => {
+        const newStatus = !batch.isVerificationActive;
+        try {
+            const response = await api.patch(`/batches/${batch.batchId}/verification`, {
+                isVerificationActive: newStatus ? "1" : "0"
+            });
+            
+            if (response.status >= 200 && response.status < 300) {
+                // Update all batches - set current to newStatus, others to false
+                const updatedBatches = batches.map(b => ({
+                    ...b,
+                    isVerificationActive: b.batchId === batch.batchId ? newStatus : false
+                }));
+                setBatches(updatedBatches);
+            } else {
+                throw new Error(response.data?.message || 'Status update failed');
+            }
+        } catch (error: any) {
+            setError(
+                error.response?.data?.message || 
+                error.message || 
+                'Failed to update verification status'
+            );
+            // Revert on error
+            const revertedBatches = batches.map(b => 
+                b.batchId === batch.batchId ? { ...b, isVerificationActive: batch.isVerificationActive } : b
+            );
+            setBatches(revertedBatches);
         }
-    } catch (error: any) {
-        setError(
-            error.response?.data?.message || 
-            error.message || 
-            'Failed to update verification status'
-        );
-        // Revert on error
-        const revertedBatches = batches.map(b => 
-            b.batchId === batch.batchId ? { ...b, isVerificationActive: batch.isVerificationActive } : b
-        );
-        setBatches(revertedBatches);
-    }
-};
-
+    };
 
     return (
         <DashboardCard title="Batches">
@@ -301,15 +306,14 @@ const toggleVerificationStatus = async (batch: Batch) => {
                     </Button>
                 </Box>
                 
-                <Box mb={2} display="flex" justifyContent="space-between" alignItems="center" gap={2}>
+                <Box display="flex" gap={2} alignItems="center">
                     <TextField
-                        fullWidth
                         variant="outlined"
                         placeholder="Search by batch ID or name..."
                         value={searchQuery}
                         onChange={(e) => {
                             setSearchQuery(e.target.value);
-                            setCurrentPage(1); // Reset to first page when searching
+                            setCurrentPage(1);
                         }}
                         InputProps={{
                             endAdornment: searchQuery && (
@@ -319,6 +323,21 @@ const toggleVerificationStatus = async (batch: Batch) => {
                             ),
                         }}
                     />
+                    <FormControl variant="outlined" sx={{ minWidth: 120 }}>
+                        <InputLabel id="records-per-page-label">Records per page</InputLabel>
+                        <Select
+                            labelId="records-per-page-label"
+                            value={recordsPerPage}
+                            onChange={handleRecordsPerPageChange}
+                            label="Records per page"
+                        >
+                            {recordsPerPageOptions.map(option => (
+                                <MenuItem key={option} value={option}>
+                                    {option}
+                                </MenuItem>
+                            ))}
+                        </Select>
+                    </FormControl>
                     <Button 
                         variant="contained" 
                         onClick={() => fetchData()}
@@ -353,6 +372,11 @@ const toggleVerificationStatus = async (batch: Batch) => {
                                 <TableRow>
                                     <TableCell>
                                         <Typography variant="subtitle2" fontWeight={600}>
+                                            SN
+                                        </Typography>
+                                    </TableCell>
+                                    <TableCell>
+                                        <Typography variant="subtitle2" fontWeight={600}>
                                             Batch ID
                                         </Typography>
                                     </TableCell>
@@ -378,14 +402,25 @@ const toggleVerificationStatus = async (batch: Batch) => {
                                     </TableCell>
                                     <TableCell>
                                         <Typography variant="subtitle2" fontWeight={600}>
+                                            Verification
+                                        </Typography>
+                                    </TableCell>
+                                    <TableCell>
+                                        <Typography variant="subtitle2" fontWeight={600}>
                                             Actions
                                         </Typography>
                                     </TableCell>
                                 </TableRow>
                             </TableHead>
                             <TableBody>
-                                {batches.map((batch) => (
+                                {batches.map((batch, index) => (
                                     <TableRow key={batch.id}>
+                                       <TableCell>
+                <Typography>
+                    {(currentPage - 1) * recordsPerPage + index + 1}
+                </Typography>
+            </TableCell>
+
                                         <TableCell>
                                             <Typography>
                                                 {batch.batchId}
@@ -408,37 +443,38 @@ const toggleVerificationStatus = async (batch: Batch) => {
                                         </TableCell>
                                         <TableCell>
                                             <Typography>
-                                                {batch.status.charAt(0).toUpperCase() + batch.status.slice(1)}
+                                                {batch.status ? 
+                                                    batch.status.charAt(0).toUpperCase() + batch.status.slice(1) : 
+                                                    'Unknown'}
                                             </Typography>
                                         </TableCell>
                                         <TableCell>
-                            <Typography color={batch.isVerificationActive ? "success.main" : "error.main"}>
-                                {batch.isVerificationActive ? "Verification Active" : "Verification Inactive"}
-                            </Typography>
-                        </TableCell>
-                         <TableCell>
-                            <IconButton onClick={() => handleOpenModal(batch)}>
-                                <EditIcon />
-                            </IconButton>
-                            <IconButton 
-                                onClick={() => handleOpenDeleteDialog(batch)}
-                                disabled={isSubmitting}
-                            >
-                                <DeleteIcon />
-                            </IconButton>
-                            <FormControlLabel
-                                control={
-                                    <Switch
-                                        checked={batch.isVerificationActive}
-                                        onChange={() => toggleVerificationStatus(batch)}
-                                        color="primary"
-                                    />
-                                }
-                                label=""
-                                labelPlacement="start"
-                            />
-                        </TableCell>
-                                        
+                                            <Typography color={batch.isVerificationActive ? "success.main" : "error.main"}>
+                                                {batch.isVerificationActive ? "Active" : "Inactive"}
+                                            </Typography>
+                                        </TableCell>
+                                        <TableCell>
+                                            <IconButton onClick={() => handleOpenModal(batch)}>
+                                                <EditIcon />
+                                            </IconButton>
+                                            <IconButton 
+                                                onClick={() => handleOpenDeleteDialog(batch)}
+                                                disabled={isSubmitting}
+                                            >
+                                                <DeleteIcon />
+                                            </IconButton>
+                                            <FormControlLabel
+                                                control={
+                                                    <Switch
+                                                        checked={batch.isVerificationActive}
+                                                        onChange={() => toggleVerificationStatus(batch)}
+                                                        color="primary"
+                                                    />
+                                                }
+                                                label=""
+                                                labelPlacement="start"
+                                            />
+                                        </TableCell>
                                     </TableRow>
                                 ))}
                             </TableBody>
