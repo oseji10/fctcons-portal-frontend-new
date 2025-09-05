@@ -131,7 +131,7 @@ const Home = () => {
                 </Typography>
               </Box>
 
-              <Typography
+              {/* <Typography
                 variant="h6"
                 component="h3"
                 sx={{ fontWeight: 600, mt: 4, mb: 2 }}
@@ -154,7 +154,7 @@ const Home = () => {
                     Post Basic Nursing: Eighteen (18) months.
                   </Typography>
                 </li>
-              </ul>
+              </ul> */}
 
               <Typography
                 variant="h6"
@@ -319,10 +319,10 @@ const Home = () => {
                 component="h3"
                 sx={{ fontWeight: 600, mt: 4, mb: 2 }}
               >
-                Screening Venue
+                Examination Venue
               </Typography>
               <Typography variant="body1" paragraph sx={{ mb: 4 }}>
-                College Premises
+                FCT College of Nursing Sciences, Gwagwalada, located within University of Abuja Teaching Hospital (UATH) formerly known as Specialist Hospital
               </Typography>
 
               <Box
@@ -350,7 +350,9 @@ const Home = () => {
               </Typography>
               <Typography variant="body1" paragraph sx={{ mb: 4 }}>
                 07039837749 / 08036625119 (08082775076-whatsapp only)<br/><br/>
-                If you'd like to stay updated and be part of our community, connect with us on Facebook by clicking the link below to join our group:  <a target="_blank" href="https://www.facebook.com/share/g/ZU73U7cfqjmuRcyf/?mibextid=A7sQZp">https://www.facebook.com/share/g/ZU73U7cfqjmuRcyf/?mibextid=A7sQZp</a>
+                You can reach us for any support during the application process via the contact details above or through the live chat on the portal or send us an email to <a href="mailto:support.consap@fcthhss.abj.gov.ng">support.consap@fcthhss.abj.gov.ng</a>.<br/>
+                You can also join our Telegram channel for updates: <a target="_blank" href="https://t.me/+SWH5opeTcTXs34Ko">https://t.me/+SWH5opeTcTXs34Ko</a><br/>
+                {/* If you'd like to stay updated and be part of our community, connect with us on Facebook by clicking the link below to join our group:  <a target="_blank" href="https://www.facebook.com/share/g/ZU73U7cfqjmuRcyf/?mibextid=A7sQZp">https://www.facebook.com/share/g/ZU73U7cfqjmuRcyf/?mibextid=A7sQZp</a> */}
               </Typography>
 
               <Typography

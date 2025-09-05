@@ -1,21 +1,18 @@
 import {
     Typography, Box,
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableRow,
     Button,
-    TextField,
     IconButton,
     CircularProgress,
-    Pagination,
     Alert,
     Chip,
     Avatar,
     Paper,
     Grid,
-    LinearProgress
+    LinearProgress,
+    Card,
+    CardContent,
+    CardActions,
+    Divider
 } from '@mui/material';
 import DashboardCard from '@/app/(DashboardLayout)/components/shared/DashboardCard';
 import { useEffect, useState } from "react";
@@ -23,6 +20,7 @@ import api from '../../../../lib/api';
 import DownloadIcon from '@mui/icons-material/Download';
 import ClearIcon from '@mui/icons-material/Clear';
 import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
+import PrintIcon from '@mui/icons-material/Print';
 
 interface ExamSlip {
     id: number;
@@ -44,16 +42,11 @@ interface ExamSlip {
 }
 
 const MyExamSlips = () => {
-const [examSlips, setExamSlips] = useState<ExamSlip[]>([]);
+    const [examSlips, setExamSlips] = useState<ExamSlip[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
-    const [currentPage, setCurrentPage] = useState(1);
-    const [totalPages, setTotalPages] = useState(1);
-    const [totalRecords, setTotalRecords] = useState(0);
-    const [searchQuery, setSearchQuery] = useState("");
     const [isDownloading, setIsDownloading] = useState(false);
     const [downloadProgress, setDownloadProgress] = useState(0);
-    const perPage = 10;
 
     const statusOptions = [
         { value: 'pending_payment', label: 'Pending Payment', color: 'warning' },
@@ -62,31 +55,24 @@ const [examSlips, setExamSlips] = useState<ExamSlip[]>([]);
         { value: 'rejected', label: 'Rejected', color: 'error' }
     ];
 
-   const fetchData = async () => {
-    setIsLoading(true);
-    try {
-        const response = await api.get('/my-slips');
-        // Handle both array and single object responses
-        const data = Array.isArray(response.data) ? response.data : [response.data];
-        setExamSlips(data);
-        setTotalPages(1);
-        setTotalRecords(data.length);
-        setError(null);
-    } catch (error: any) {
-        setError(error.response?.data?.message || 'Failed to fetch exam slips');
-        console.error('Fetch error:', error);
-    } finally {
-        setIsLoading(false);
-    }
-};
+    const fetchData = async () => {
+        setIsLoading(true);
+        try {
+            const response = await api.get('/my-slips');
+            const data = Array.isArray(response.data) ? response.data : [response.data];
+            setExamSlips(data);
+            setError(null);
+        } catch (error: any) {
+            setError(error.response?.data?.message || 'Failed to fetch exam slips');
+            console.error('Fetch error:', error);
+        } finally {
+            setIsLoading(false);
+        }
+    };
 
     useEffect(() => {
         fetchData();
-    }, [currentPage, searchQuery]);
-
-    const handlePageChange = (event: React.ChangeEvent<unknown>, page: number) => {
-        setCurrentPage(page);
-    };
+    }, []);
 
     const formatDate = (dateString: string | null) => {
         if (!dateString) return 'N/A';
@@ -151,40 +137,12 @@ const [examSlips, setExamSlips] = useState<ExamSlip[]>([]);
         }
     };
 
+    const handlePrint = () => {
+        window.print();
+    };
+
     return (
         <DashboardCard title="My Exam Slips">
-            <Box mb={2} display="flex" justifyContent="flex-end">
-                <Box display="flex" gap={2} alignItems="center">
-                    <TextField
-                        variant="outlined"
-                        placeholder="Search by application ID..."
-                        value={searchQuery}
-                        onChange={(e) => {
-                            setSearchQuery(e.target.value);
-                            setCurrentPage(1);
-                        }}
-                        size="small"
-                        InputProps={{
-                            endAdornment: searchQuery && (
-                                <IconButton 
-                                    size="small" 
-                                    onClick={() => setSearchQuery("")}
-                                >
-                                    <ClearIcon fontSize="small" />
-                                </IconButton>
-                            ),
-                        }}
-                    />
-                    <Button 
-                        variant="outlined" 
-                        onClick={() => fetchData()}
-                        disabled={isLoading}
-                    >
-                        Search
-                    </Button>
-                </Box>
-            </Box>
-
             {error && (
                 <Alert severity="error" sx={{ mb: 2 }}>
                     {error}
@@ -197,103 +155,124 @@ const [examSlips, setExamSlips] = useState<ExamSlip[]>([]);
                 </Box>
             ) : (
                 <>
-                    <Box sx={{ overflow: 'auto', width: { xs: '280px', sm: 'auto' } }}>
-                        <Table
-                            aria-label="Exam slips table"
-                            sx={{
-                                whiteSpace: "nowrap",
-                                mt: 2
-                            }}
+                    <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 2 }}>
+                        <Button 
+                            variant="outlined" 
+                            startIcon={<PrintIcon />}
+                            onClick={handlePrint}
+                            sx={{ display: { xs: 'none', sm: 'flex' } }}
                         >
-                            <TableHead>
-                                <TableRow>
-                                    <TableCell>
-                                        <Typography variant="subtitle2" fontWeight={600}>
-                                            Application ID
-                                        </Typography>
-                                    </TableCell>
-                                    <TableCell>
-                                        <Typography variant="subtitle2" fontWeight={600}>
-                                            Candidate
-                                        </Typography>
-                                    </TableCell>
-                                    <TableCell>
-                                        <Typography variant="subtitle2" fontWeight={600}>
-                                            Batch
-                                        </Typography>
-                                    </TableCell>
-                                    {/* <TableCell>
-                                        <Typography variant="subtitle2" fontWeight={600}>
-                                            Status
-                                        </Typography>
-                                    </TableCell> */}
-                                    {/* <TableCell>
-                                        <Typography variant="subtitle2" fontWeight={600}>
-                                            Last Updated
-                                        </Typography>
-                                    </TableCell> */}
-                                    <TableCell>
-                                        <Typography variant="subtitle2" fontWeight={600}>
-                                            Actions
-                                        </Typography>
-                                    </TableCell>
-                                </TableRow>
-                            </TableHead>
-                            <TableBody>
-                                
-    {examSlips && examSlips.length > 0 ? (
-        examSlips.map((slip) => (
-                                        <TableRow key={slip.id}>
-                                            <TableCell>
-                                                <Typography>
-                                                    {slip.applicationId}
-                                                </Typography>
-                                            </TableCell>
-                                            <TableCell>
-                                                <Typography>
-                                                    {formatFullName(slip.users)}
-                                                </Typography>
-                                            </TableCell>
-                                            <TableCell>
-                                                <Typography>
-                                                    {slip.batch}
-                                                </Typography>
-                                            </TableCell>
-                                            {/* <TableCell>
+                            Print Page
+                        </Button>
+                    </Box>
+
+                    <Grid container spacing={3}>
+                        {examSlips && examSlips.length > 0 ? (
+                            examSlips.map((slip) => (
+                                <Grid item xs={12} key={slip.id}>
+                                    <Card 
+                                        elevation={3}
+                                        sx={{ 
+                                            p: 2,
+                                            border: '1px solid #e0e0e0',
+                                            '@media print': {
+                                                border: '2px solid #000',
+                                                boxShadow: 'none',
+                                                pageBreakInside: 'avoid'
+                                            }
+                                        }}
+                                    >
+                                        <CardContent>
+                                            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
+                                                <Box>
+                                                    <Typography variant="h6" gutterBottom>
+                                                        Examination Slip
+                                                    </Typography>
+                                                    <Typography variant="body2" color="text.secondary">
+                                                        Application ID: {slip.applicationId}
+                                                    </Typography>
+                                                </Box>
                                                 <Chip 
                                                     label={getStatusLabel(slip.status)}
                                                     color={getStatusColor(slip.status) as any}
                                                     size="small"
                                                 />
-                                            </TableCell> */}
-                                            {/* <TableCell>
-                                                <Typography>
-                                                    {formatDate(slip.updated_at)}
+                                            </Box>
+
+                                            <Divider sx={{ my: 2 }} />
+
+                                            <Grid container spacing={2}>
+                                                <Grid item xs={12} sm={6}>
+                                                    <Typography variant="subtitle2" gutterBottom>
+                                                        Candidate Information
+                                                    </Typography>
+                                                    <Typography variant="body1" gutterBottom>
+                                                        <strong>Name:</strong> {formatFullName(slip.users)}
+                                                    </Typography>
+                                                    <Typography variant="body1" gutterBottom>
+                                                        <strong>JAMB ID:</strong> {slip.jambId}
+                                                    </Typography>
+                                                    <Typography variant="body1" gutterBottom>
+                                                        <strong>Date of Birth:</strong> {formatDate(slip.dateOfBirth)}
+                                                    </Typography>
+                                                    <Typography variant="body1" gutterBottom>
+                                                        <strong>Gender:</strong> {slip.gender}
+                                                    </Typography>
+                                                </Grid>
+
+                                                <Grid item xs={12} sm={6}>
+                                                    <Typography variant="subtitle2" gutterBottom>
+                                                        Contact Information
+                                                    </Typography>
+                                                    <Typography variant="body1" gutterBottom>
+                                                        <strong>Email:</strong> {slip.users.email}
+                                                    </Typography>
+                                                    <Typography variant="body1" gutterBottom>
+                                                        <strong>Phone:</strong> {slip.users.phoneNumber}
+                                                    </Typography>
+                                                    <Typography variant="body1" gutterBottom>
+                                                        <strong>Batch:</strong> {slip.batch}
+                                                    </Typography>
+                                                </Grid>
+                                            </Grid>
+
+                                            <Box sx={{ mt: 3, p: 2, bgcolor: '#f5f5f5', borderRadius: 1 }}>
+                                                <Typography variant="body2" sx={{ fontStyle: 'italic' }}>
+                                                    Please bring this exam slip along with a valid ID to the examination center. 
+                                                    Arrive at least 30 minutes before your scheduled exam time.
                                                 </Typography>
-                                            </TableCell> */}
-                                            <TableCell>
-                                                <Button
-                                                    variant="outlined"
-                                                    size="small"
-                                                    startIcon={<PictureAsPdfIcon />}
-                                                    onClick={() => downloadExamSlip(slip.applicationId)}
-                                                    disabled={isDownloading}
-                                                >
-                                                    Download
-                                                </Button>
-                                            </TableCell>
-                                        </TableRow>
-                                 ))
-    ) : (
-        <TableRow>
-            <TableCell colSpan={6} align="center">
-                No exam slips found
-            </TableCell>
-        </TableRow>
-    )}
-</TableBody>
-                        </Table>
-                    </Box>
+                                            </Box>
+                                        </CardContent>
+
+                                        <CardActions sx={{ 
+                                            justifyContent: 'flex-end',
+                                            '@media print': {
+                                                display: 'none'
+                                            }
+                                        }}>
+                                            <Button
+                                                variant="contained"
+                                                size="medium"
+                                                startIcon={<PictureAsPdfIcon />}
+                                                onClick={() => downloadExamSlip(slip.applicationId)}
+                                                disabled={isDownloading}
+                                            >
+                                                Download PDF
+                                            </Button>
+                                        </CardActions>
+                                    </Card>
+                                </Grid>
+                            ))
+                        ) : (
+                            <Grid item xs={12}>
+                                <Box sx={{ textAlign: 'center', py: 4 }}>
+                                    <Typography variant="h6" color="text.secondary">
+                                        No exam slips found
+                                    </Typography>
+                                </Box>
+                            </Grid>
+                        )}
+                    </Grid>
                     
                     {isDownloading && (
                         <Box sx={{ width: '100%', mt: 2 }}>
@@ -306,20 +285,6 @@ const [examSlips, setExamSlips] = useState<ExamSlip[]>([]);
                             </Typography>
                         </Box>
                     )}
-
-                    <Box display="flex" justifyContent="space-between" alignItems="center" mt={3}>
-                        <Typography variant="body2">
-                            Showing {examSlips.length} of {totalRecords} exam slips
-                        </Typography>
-                        <Pagination
-                            count={totalPages}
-                            page={currentPage}
-                            onChange={handlePageChange}
-                            color="primary"
-                            showFirstButton
-                            showLastButton
-                        />
-                    </Box>
                 </>
             )}
         </DashboardCard>

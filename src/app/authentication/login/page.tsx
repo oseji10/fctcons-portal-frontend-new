@@ -125,23 +125,32 @@ const AuthLogin = () => {
               flexShrink: 0,
             }}
           >
-            <Box display="flex" justifyContent="center" mb={{ xs: 1, sm: 2 }}>
-              <Logo sx={{ width: { xs: 140, sm: 180 }, height: 'auto', filter: "brightness(0) invert(1)" }} />
-            </Box>
-            <Typography 
-              variant="h4" 
-              fontWeight="700" 
-              sx={{ fontSize: { xs: '1.5rem', sm: '2rem' } }}
-            >
-              Sign In
-            </Typography>
-            <Typography 
-              variant="body2" 
-              sx={{ opacity: 0.9, mt: 1, fontSize: { xs: '0.75rem', sm: '0.875rem' } }}
-            >
-              Access your account to continue
-            </Typography>
-          </Box>
+           <Box display="flex" justifyContent="center" mb={{ xs: 1, sm: 2 }}>
+                         {/* <Logo sx={{ width: { xs: 140, sm: 180 }, height: 'auto', filter: "brightness(0) invert(1)" }} /> */}
+                       </Box>
+                       <Typography 
+                         variant="h4" 
+                         fontWeight="500" 
+                         sx={{ fontSize: { xs: '1.5rem', sm: '2rem' } }}
+                       >
+                         FCT College of Nursing Sciences
+                       </Typography>
+                       <br/>
+                       <Typography 
+                         variant="body2" 
+                         // fontWeight="100" 
+                         sx={{ fontSize: {mt: 3, xs: '1.5rem', sm: '1.5rem' } }}
+                       >
+                         2025 ND Nursing Application Portal
+                       </Typography>
+                       <br/>
+                       <Typography 
+                         variant="body2" 
+                         sx={{ opacity: 0.9, mt: 1, fontSize: { xs: '1rem', sm: '1rem' } }}
+                       >
+                        Sign in to your account
+                       </Typography>
+                     </Box>
 
           <Box 
             sx={{ 

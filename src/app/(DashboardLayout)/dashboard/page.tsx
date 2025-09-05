@@ -32,22 +32,24 @@ const Dashboard = () => {
     {
       title: "My Application",
       description: "View and edit my profile",
-      url: "/dashboard/profile",
+      url: "/dashboard/apply",
       color: "secondary",
       icon: <ArrowForward />
     },
-    // {
-    //   title: "My Courses",
-    //   description: "View all my courses",
-    //   url: "/dashboard/courses",
-    //   color: "primary",
-    //   icon: <ArrowForward />
-    // },
+    
     {
       title: "My Payments",
       description: "View payment records and transactions",
-      url: "/dashboard/payments",
+      url: "/dashboard/my-payments",
       color: "secondary",
+      icon: <ArrowForward />
+    },
+
+    {
+      title: "My Exam Slip",
+      description: "View my exam slip",
+      url: "/dashboard/my-exam-slip",
+      color: "primary",
       icon: <ArrowForward />
     },
     // {
@@ -68,8 +70,8 @@ const Dashboard = () => {
     
     {
       title: "Admission",
-      description: "View and download my certificates",
-      url: "/dashboard/certificates",
+      description: "Track admission status",
+      url: "/dashboard/my-admissions",
       color: "secondary",
       icon: <ArrowForward />
     },
@@ -118,16 +120,16 @@ const Dashboard = () => {
           </>
         );
       
-      case 'STAFF':
+      case 'VERIFICATION':
         return (
           <>
             <Grid item xs={12} lg={6}>
-              <SignedUp />
+               <TotalVerified />
             </Grid>
             <Grid item xs={12} lg={6}>
-              <CompletedForms />
+              <ReBatchedCandidates />
             </Grid>
-            <Grid item xs={12} lg={6}>
+            {/* <Grid item xs={12} lg={6}>
               <CompletedPayments />
             </Grid>
             <Grid item xs={12} lg={6}>
@@ -138,7 +140,7 @@ const Dashboard = () => {
             </Grid>
             <Grid item xs={12} lg={12}>
               <RecentPayments />
-            </Grid>
+            </Grid> */}
           </>
         );
       

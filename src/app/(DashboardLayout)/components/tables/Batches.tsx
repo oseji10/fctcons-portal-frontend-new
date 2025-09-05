@@ -88,10 +88,11 @@ const Batches = () => {
             });
             
             // Convert isVerificationActive to boolean
-            const convertedBatches = response.data.data.map((batch: any) => ({
-                ...batch,
-                isVerificationActive: batch.isVerificationActive === 1
-            }));
+          const convertedBatches = response.data.data.map((batch: any) => ({
+  ...batch,
+  isVerificationActive: Boolean(Number(batch.isVerificationActive))
+}));
+
             
             setBatches(convertedBatches);
             setTotalPages(response.data.last_page);

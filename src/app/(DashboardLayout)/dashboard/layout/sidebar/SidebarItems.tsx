@@ -108,10 +108,10 @@ const MENU_CONFIG: Record<string, any[]> = {
       href: "/dashboard/my-exam-slip",
     },
   ],
-  staff: [
-    { id: "panel", title: "Panel", icon: "work", href: "/staff/panel" },
+  verification: [
+    // { id: "panel", title: "Panel", icon: "work", href: "/staff/panel" },
     {
-      subheader: "Operations",
+      subheader: "Verification Dashboard",
     },
     {
       id: "dashboard",
@@ -119,11 +119,17 @@ const MENU_CONFIG: Record<string, any[]> = {
       icon: IconDashboard,
       href: "/dashboard",
     },
-    {
-      id: "tasks",
-      title: "Tasks",
-      icon: "task",
-      href: "/staff/tasks",
+     {
+      id: "verification",
+      title: "Verification",
+      icon: IconFingerprint,
+      href: "/dashboard/verification",
+    },
+       {
+      id: "attendance",
+      title: "Attendance",
+      icon: IconUsersGroup,
+      href: "/dashboard/attendance",
     },
   ],
 };
@@ -152,7 +158,7 @@ const SidebarItems: React.FC<SidebarItemsProps> = ({ toggleMobileSidebar }) => {
       case "CANDIDATE":
         selectedMenu = MENU_CONFIG.candidate;
         break;
-      case "staff":
+      case "VERIFICATION":
         selectedMenu = MENU_CONFIG.staff;
         break;
       default:

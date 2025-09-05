@@ -211,7 +211,7 @@ const Register2 = () => {
         return (
           <Stack spacing={{ xs: 2, sm: 3 }}>
             <Box sx={{ textAlign: 'center', mb: { xs: 1, sm: 2 } }}>
-              <CheckCircle sx={{ fontSize: { xs: 40, sm: 60 }, color: accentColor, mb: 1 }} />
+              <CheckCircle sx={{ fontSize: { xs: 40, sm: 60 }, color: secondaryColor, mb: 1 }} />
               <Typography 
                 variant="h6" 
                 color="primary" 
@@ -264,7 +264,12 @@ const Register2 = () => {
                   "&:hover": {
                     background: `linear-gradient(45deg, ${secondaryColor}, ${primaryColor})`,
                     color: 'white'
-                  }
+                  },
+                  "&.Mui-disabled": {
+      color: "white",
+      background: `linear-gradient(45deg, ${primaryColor}, ${secondaryColor})`,
+      opacity: 0.5,
+    },
                 }}
               >
                 {validatingJamb ? "Validating..." : "Verify JAMB Details"}
@@ -587,8 +592,10 @@ const Register2 = () => {
           sx={{
             width: "100%",
             maxWidth: { xs: '100%', sm: 600, md: 700 },
-            maxHeight: '90vh',
+            maxHeight: '95vh',
+            minHeight: '80vh',
             overflow: "hidden",
+
             borderRadius: { xs: 2, sm: 4 },
             background: "white",
             boxShadow: { xs: "0 8px 16px rgba(0,0,0,0.1)", sm: "0 20px 40px rgba(0,0,0,0.1)" },
@@ -608,20 +615,29 @@ const Register2 = () => {
             }}
           >
             <Box display="flex" justifyContent="center" mb={{ xs: 1, sm: 2 }}>
-              <Logo sx={{ width: { xs: 140, sm: 180 }, height: 'auto', filter: "brightness(0) invert(1)" }} />
+              {/* <Logo sx={{ width: { xs: 140, sm: 180 }, height: 'auto', filter: "brightness(0) invert(1)" }} /> */}
             </Box>
             <Typography 
               variant="h4" 
-              fontWeight="700" 
+              fontWeight="500" 
               sx={{ fontSize: { xs: '1.5rem', sm: '2rem' } }}
             >
-              Create Account
+              FCT College of Nursing Sciences
             </Typography>
+            <br/>
             <Typography 
               variant="body2" 
-              sx={{ opacity: 0.9, mt: 1, fontSize: { xs: '0.75rem', sm: '0.875rem' } }}
+              // fontWeight="100" 
+              sx={{ fontSize: {mt: 3, xs: '1.5rem', sm: '1.5rem' } }}
             >
-              Join our community of healthcare professionals
+              2025 ND Nursing Application Portal
+            </Typography>
+            <br/>
+            <Typography 
+              variant="body2" 
+              sx={{ opacity: 0.9, mt: 1, fontSize: { xs: '1rem', sm: '1rem' } }}
+            >
+             Create Account to Start Your Application
             </Typography>
           </Box>
 
@@ -681,21 +697,28 @@ const Register2 = () => {
                   
                   {activeStep === steps.length - 1 ? (
                     <Button 
-                      type="submit"
-                      variant="contained"
-                      disabled={isSubmitting}
-                      sx={{
-                        py: { xs: 1, sm: 1.5 },
-                        fontSize: { xs: '0.875rem', sm: '1rem' },
-                        background: `linear-gradient(45deg, ${primaryColor}, ${secondaryColor})`,
-                        "&:hover": {
-                          background: `linear-gradient(45deg, ${secondaryColor}, ${primaryColor})`,
-                        }
-                      }}
-                      startIcon={isSubmitting ? <CircularProgress size={20} /> : null}
-                    >
-                      {isSubmitting ? "Submitting..." : "Create Account"}
-                    </Button>
+  type="submit"
+  variant="contained"
+  disabled={isSubmitting}
+  sx={{
+    py: { xs: 1, sm: 1.5 },
+    fontSize: { xs: '0.875rem', sm: '1rem' },
+    background: `linear-gradient(45deg, ${primaryColor}, ${secondaryColor})`,
+    color: "white",
+    "&:hover": {
+      background: `linear-gradient(45deg, ${secondaryColor}, ${primaryColor})`,
+    },
+    "&.Mui-disabled": {
+      color: "white",
+      background: `linear-gradient(45deg, ${primaryColor}, ${secondaryColor})`,
+      opacity: 0.5,
+    },
+  }}
+  startIcon={isSubmitting ? <CircularProgress size={20} /> : null}
+>
+  {isSubmitting ? "Submitting..." : "Create Account"}
+</Button>
+
                   ) : activeStep === 0 && jambValidated ? (
                     <div></div>
                   ) : (
@@ -709,7 +732,12 @@ const Register2 = () => {
                         background: `linear-gradient(45deg, ${primaryColor}, ${secondaryColor})`,
                         "&:hover": {
                           background: `linear-gradient(45deg, ${secondaryColor}, ${primaryColor})`,
-                        }
+                        },
+                        "&.Mui-disabled": {
+      color: "white",
+      background: `linear-gradient(45deg, ${primaryColor}, ${secondaryColor})`,
+      opacity: 0.5,
+    },
                       }}
                     >
                       Next
