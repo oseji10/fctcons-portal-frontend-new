@@ -90,7 +90,7 @@ const RecentPayments = () => {
                     <Box sx={{ display: 'flex', alignItems: 'center' }}>
                       <Box>
                         <Typography variant="subtitle2" fontWeight={600}>
-                          {`${payment.users.firstName} ${payment.users.lastName}  ${payment.users.otherNames}`}
+                          {`${payment.users.firstName} ${payment.users.lastName}  ${payment.users.otherNames ?? ''}`}
                         </Typography>
                         <Typography color="textSecondary" sx={{ fontSize: '13px' }}>
                           {payment.applicationId}
@@ -105,7 +105,7 @@ const RecentPayments = () => {
                   </TableCell>
                   <TableCell>
                     <Typography color="textSecondary" variant="subtitle2" fontWeight={400}>
-                      {
+                      {/* {
   payment.users.applicationType === 1
     ? 'ND Nursing'
     : payment.users.applicationType === 2
@@ -113,7 +113,8 @@ const RecentPayments = () => {
     : payment.users.applicationType === 3
     ? 'Post-Basic Nursing'
     : 'Other'
-}
+} */}
+ND Nursing
 
                     </Typography>
                   </TableCell>
