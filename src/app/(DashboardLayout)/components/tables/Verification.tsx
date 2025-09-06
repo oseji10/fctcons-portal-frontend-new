@@ -33,6 +33,11 @@ interface Candidate {
     isPresent: boolean;
     hall: string | null;
     seatNumber: string | null;
+    stateOfOrigin: string;
+    lgaOfOrigin: string | null;
+    maritalStatus: string | null;
+    examDate: string;
+    examTime: string;
 }
 
 const Verification = () => {
@@ -216,14 +221,17 @@ const Verification = () => {
                                         mb: 2
                                     }} 
                                 />
-                                <Typography variant="h6" sx={{ 
+                                <Typography variant="h4" sx={{ 
                                     fontWeight: 'bold',
                                     color: '#2c3e50',
-                                    mt: 1
+                                    mt: 1,
+                                    alignContent: 'center',
+                                    textAlign: 'center',
+                                    mb: 0.5
                                 }}>
                                     {formatFullName(candidate)}
                                 </Typography>
-                                <Typography variant="body2" sx={{ 
+                                <Typography variant="h6" sx={{ 
                                     color: '#7f8c8d',
                                     mb: 1
                                 }}>
@@ -255,7 +263,71 @@ const Verification = () => {
                                                     {candidate.applicationId}
                                                 </Typography>
                                             </Box>
+                                             <Box sx={{ mb: 2 }}>
+                                                <Typography variant="subtitle2" sx={{ 
+                                                    color: '#7f8c8d',
+                                                    fontSize: '0.85rem'
+                                                }}>
+                                                    PHONE NUMBER
+                                                </Typography>
+                                                <Typography variant="body1" sx={{ fontWeight: '500' }}>
+                                                    {candidate.phoneNumber}
+                                                </Typography>
+                                            </Box>
+
                                             <Box sx={{ mb: 2 }}>
+                                                <Typography variant="subtitle2" sx={{ 
+                                                    color: '#7f8c8d',
+                                                    fontSize: '0.85rem'
+                                                }}>
+                                                    MARITAL STATUS
+                                                </Typography>
+                                                <Typography variant="body1" sx={{ fontWeight: '500' }}>
+                                                    {candidate.maritalStatus || 'N/A'}
+                                                </Typography>
+                                            </Box>
+
+                                            <Box sx={{ mb: 2 }}>
+                                                <Typography variant="subtitle2" sx={{ 
+                                                    color: '#7f8c8d',
+                                                    fontSize: '0.85rem'
+                                                }}>
+                                                    BATCH
+                                                </Typography>
+                                                <Typography variant="body1" sx={{ fontWeight: '500' }}>
+                                                    {candidate.batch}
+                                                </Typography>
+                                            </Box>
+
+                                              <Box sx={{ mb: 2 }}>
+                                                <Typography variant="subtitle2" sx={{ 
+                                                    color: '#7f8c8d',
+                                                    fontSize: '0.85rem'
+                                                }}>
+                                                    EXAM DATE
+                                                </Typography>
+                                                <Typography variant="body1" sx={{ fontWeight: '500' }}>
+                                                    {candidate?.examDate}
+                                                </Typography>
+                                            </Box>
+
+                                            <Box sx={{ mb: 2 }}>
+                                                <Typography variant="subtitle2" sx={{ 
+                                                    color: '#7f8c8d',
+                                                    fontSize: '0.85rem'
+                                                }}>
+                                                    EXAM TIME
+                                                </Typography>
+                                                <Typography variant="body1" sx={{ fontWeight: '500' }}>
+                                                    {candidate?.examTime}
+                                                </Typography>
+                                            </Box>
+                                        </Grid>
+
+                                          
+                                        {/* </Grid> */}
+                                        <Grid item xs={12} md={6}>
+                                              <Box sx={{ mb: 2 }}>
                                                 <Typography variant="subtitle2" sx={{ 
                                                     color: '#7f8c8d',
                                                     fontSize: '0.85rem'
@@ -271,36 +343,24 @@ const Verification = () => {
                                                     color: '#7f8c8d',
                                                     fontSize: '0.85rem'
                                                 }}>
-                                                    BATCH
-                                                </Typography>
-                                                <Typography variant="body1" sx={{ fontWeight: '500' }}>
-                                                    {candidate.batch}
-                                                </Typography>
-                                            </Box>
-                                        </Grid>
-                                        <Grid item xs={12} md={6}>
-                                            <Box sx={{ mb: 2 }}>
-                                                <Typography variant="subtitle2" sx={{ 
-                                                    color: '#7f8c8d',
-                                                    fontSize: '0.85rem'
-                                                }}>
                                                     EMAIL
                                                 </Typography>
                                                 <Typography variant="body1" sx={{ fontWeight: '500' }}>
                                                     {candidate.email}
                                                 </Typography>
                                             </Box>
-                                            <Box sx={{ mb: 2 }}>
+                                         <Box sx={{ mb: 2 }}>
                                                 <Typography variant="subtitle2" sx={{ 
                                                     color: '#7f8c8d',
                                                     fontSize: '0.85rem'
                                                 }}>
-                                                    PHONE NUMBER
+                                                    GENDER
                                                 </Typography>
                                                 <Typography variant="body1" sx={{ fontWeight: '500' }}>
-                                                    {candidate.phoneNumber}
+                                                    {candidate.gender}
                                                 </Typography>
                                             </Box>
+
                                             <Box sx={{ mb: 2 }}>
                                                 <Typography variant="subtitle2" sx={{ 
                                                     color: '#7f8c8d',
@@ -310,6 +370,32 @@ const Verification = () => {
                                                 </Typography>
                                                 <Typography variant="body1" sx={{ fontWeight: '500' }}>
                                                     {formatDate(candidate.dateOfBirth)}
+                                                </Typography>
+                                            </Box>
+
+                                            
+
+                                             <Box sx={{ mb: 2 }}>
+                                                <Typography variant="subtitle2" sx={{ 
+                                                    color: '#7f8c8d',
+                                                    fontSize: '0.85rem'
+                                                }}>
+                                                    STATE OF ORIGIN
+                                                </Typography>
+                                                <Typography variant="body1" sx={{ fontWeight: '500' }}>
+                                                    {candidate.stateOfOrigin}
+                                                </Typography>
+                                            </Box>
+
+                                            <Box sx={{ mb: 2 }}>
+                                                <Typography variant="subtitle2" sx={{ 
+                                                    color: '#7f8c8d',
+                                                    fontSize: '0.85rem'
+                                                }}>
+                                                    LGA OF ORIGIN
+                                                </Typography>
+                                                <Typography variant="body1" sx={{ fontWeight: '500' }}>
+                                                    {candidate.lgaOfOrigin || 'N/A'}
                                                 </Typography>
                                             </Box>
                                         </Grid>
@@ -418,7 +504,7 @@ const Verification = () => {
                                                     fontWeight: '500',
                                                     color: '#5d4037'
                                                 }}>
-                                                    Confirm candidate is present for examination
+                                                   I confirm this candidate is present for this examination.
                                                 </Typography>
                                             }
                                             sx={{ ml: 0, mb: 2 }}

@@ -63,7 +63,7 @@ const Apply = () => {
   const phone = getPhoneNumber();
 
   const [formData, setFormData] = useState({
-    gender: "",
+    // gender: "",
     maritalStatus: "",
     dateOfBirth: "",
     olevelResults: [
@@ -134,10 +134,10 @@ const Apply = () => {
   };
 
   const validateBiodata = () => {
-    if (!formData.gender) {
-      setError('Gender is required');
-      return false;
-    }
+    // if (!formData.gender) {
+    //   setError('Gender is required');
+    //   return false;
+    // }
     if (!formData.maritalStatus) {
       setError('Marital Status is required');
       return false;
@@ -214,7 +214,7 @@ const Apply = () => {
         (r) => r.subject && r.grade && r.examYear && r.examType
       );
       
-      formDataToSend.append('gender', formData.gender);
+    //   formDataToSend.append('gender', formData.gender);
       formDataToSend.append('maritalStatus', formData.maritalStatus);
       formDataToSend.append('dateOfBirth', formData.dateOfBirth);
       formDataToSend.append('olevelResults', JSON.stringify(completeOlevelResults));
@@ -481,7 +481,7 @@ const Apply = () => {
                     size="small"
                   />
                 </Grid>
-                <Grid item xs={12} sm={6}>
+                {/* <Grid item xs={12} sm={6}>
                   <FormControl fullWidth required>
                     <InputLabel>Gender</InputLabel>
                     <Select
@@ -494,10 +494,9 @@ const Apply = () => {
                       <MenuItem value="">Select Gender</MenuItem>
                       <MenuItem value="Male">Male</MenuItem>
                       <MenuItem value="Female">Female</MenuItem>
-                      {/* <MenuItem value="Other">Other</MenuItem> */}
                     </Select>
                   </FormControl>
-                </Grid>
+                </Grid>  */}
                 <Grid item xs={12} sm={6}>
                   <FormControl fullWidth required>
                     <InputLabel>Marital Status</InputLabel>
@@ -515,7 +514,7 @@ const Apply = () => {
                     </Select>
                   </FormControl>
                 </Grid>
-                <Grid item xs={12}>
+                <Grid item xs={6}>
                   <TextField
                     fullWidth
                     label="Date of Birth"
@@ -734,11 +733,11 @@ const Apply = () => {
                           <strong>Phone:</strong> {phone}
                         </Typography>
                       </Grid>
-                      <Grid item xs={12} sm={6}>
+                      {/* <Grid item xs={12} sm={6}>
                         <Typography sx={{ fontSize: { xs: '0.75rem', sm: '0.875rem' } }}>
                           <strong>Gender:</strong> {formData.gender}
                         </Typography>
-                      </Grid>
+                      </Grid> */}
                       <Grid item xs={12} sm={6}>
                         <Typography sx={{ fontSize: { xs: '0.75rem', sm: '0.875rem' } }}>
                           <strong>Marital Status:</strong> {formData.maritalStatus}

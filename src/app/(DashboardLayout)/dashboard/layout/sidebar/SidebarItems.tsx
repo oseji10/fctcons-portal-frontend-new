@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
-import { Box, List, Typography } from "@mui/material";
+import { Box, Icon, List, Typography } from "@mui/material";
 import NavItem from "./NavItem";
 import NavGroup from "./NavGroup/NavGroup";
 import { getApplicationType, getRole } from "../../../../../lib/auth";
@@ -107,6 +107,12 @@ const MENU_CONFIG: Record<string, any[]> = {
       icon: IconPrinter,
       href: "/dashboard/my-exam-slip",
     },
+     {
+      id: "admissions",
+      title: "Admission",
+      icon: IconSchool,
+      href: "#",
+    },
   ],
   verification: [
     // { id: "panel", title: "Panel", icon: "work", href: "/staff/panel" },
@@ -131,6 +137,31 @@ const MENU_CONFIG: Record<string, any[]> = {
       icon: IconUsersGroup,
       href: "/dashboard/attendance",
     },
+  ],
+
+    director: [
+    // { id: "panel", title: "Panel", icon: "work", href: "/staff/panel" },
+    {
+      subheader: "Management Dashboard",
+    },
+    // {
+    //   id: "dashboard",
+    //   title: "Dashboard",
+    //   icon: IconDashboard,
+    //   href: "/dashboard",
+    // },
+    //  {
+    //   id: "verification",
+    //   title: "Verification",
+    //   icon: IconFingerprint,
+    //   href: "/dashboard/verification",
+    // },
+    //    {
+    //   id: "attendance",
+    //   title: "Attendance",
+    //   icon: IconUsersGroup,
+    //   href: "/dashboard/attendance",
+    // },
   ],
 };
 
@@ -159,7 +190,10 @@ const SidebarItems: React.FC<SidebarItemsProps> = ({ toggleMobileSidebar }) => {
         selectedMenu = MENU_CONFIG.candidate;
         break;
       case "VERIFICATION":
-        selectedMenu = MENU_CONFIG.staff;
+        selectedMenu = MENU_CONFIG.verification;
+        break;
+         case "DIRECTOR":
+        selectedMenu = MENU_CONFIG.director;
         break;
       default:
         selectedMenu = [];
@@ -176,12 +210,12 @@ const SidebarItems: React.FC<SidebarItemsProps> = ({ toggleMobileSidebar }) => {
           <Box sx={{ px: 3, py: 1, color: "text.secondary" }}>
             <Typography>Loading menu...</Typography>
           </Box>
-        ) : menuItems.length === 0 ? (
+        ) : menuItems?.length === 0 ? (
           <Box sx={{ px: 3, py: 1, color: "text.secondary" }}>
             <Typography>No menu items available for your role</Typography>
           </Box>
         ) : (
-          menuItems.map((item) => {
+          menuItems?.map((item) => {
             if (item.subheader) {
               return <NavGroup item={item} key={item.subheader} />;
             } else {

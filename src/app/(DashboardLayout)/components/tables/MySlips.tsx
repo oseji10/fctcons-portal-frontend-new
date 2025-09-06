@@ -155,7 +155,7 @@ const MyExamSlips = () => {
                 </Box>
             ) : (
                 <>
-                    <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 2 }}>
+                    {/* <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 2 }}>
                         <Button 
                             variant="outlined" 
                             startIcon={<PrintIcon />}
@@ -164,7 +164,7 @@ const MyExamSlips = () => {
                         >
                             Print Page
                         </Button>
-                    </Box>
+                    </Box> */}
 
                     <Grid container spacing={3}>
                         {examSlips && examSlips.length > 0 ? (

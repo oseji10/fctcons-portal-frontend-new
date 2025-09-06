@@ -14,6 +14,9 @@ import { useRouter } from 'next/navigation';
 import { ArrowForward } from '@mui/icons-material';
 import TotalBatches from '../components/dashboard/TotalBatches';
 import TotalVerified from '../components/dashboard/TotalVerified';
+import BatchingInformation from '../components/dashboard/BatchingInformation';
+import CandidatesByState from '../components/dashboard/CandidatesByState';
+import CandidatesByGender from '../components/dashboard/CandidatesByGender';
 
 
 
@@ -71,7 +74,7 @@ const Dashboard = () => {
     {
       title: "Admission",
       description: "Track admission status",
-      url: "/dashboard/my-admissions",
+      url: "#",
       color: "secondary",
       icon: <ArrowForward />
     },
@@ -115,6 +118,15 @@ const Dashboard = () => {
               <TotalVerified />
             </Grid>
             <Grid item xs={12} lg={12}>
+              <BatchingInformation />
+            </Grid>
+            <Grid item xs={12} lg={12}>
+              <CandidatesByState />
+            </Grid>
+            <Grid item xs={12} lg={12}>
+              <CandidatesByGender />
+            </Grid>
+            <Grid item xs={12} lg={12}>
               <RecentPayments />
             </Grid>
           </>
@@ -141,6 +153,47 @@ const Dashboard = () => {
             <Grid item xs={12} lg={12}>
               <RecentPayments />
             </Grid> */}
+          </>
+        );
+
+
+          case 'DIRECTOR':
+        return (
+          <>
+                <Grid item xs={12} lg={4}>
+              <SignedUp />
+            </Grid>
+            <Grid item xs={12} lg={4}>
+              <CompletedForms />
+            </Grid>
+            <Grid item xs={12} lg={4}>
+              <CompletedPayments />
+            </Grid>
+            <Grid item xs={12} lg={4}>
+              <CashGenerated />
+            </Grid>
+            <Grid item xs={12} lg={4}>
+              <BatchedCandidates />
+            </Grid>
+            <Grid item xs={12} lg={4}>
+              <ReBatchedCandidates />
+            </Grid>
+            <Grid item xs={12} lg={6}>
+              <TotalBatches />
+            </Grid>
+            <Grid item xs={12} lg={6}>
+              <TotalVerified />
+            </Grid>
+            <Grid item xs={12} lg={12}>
+              <BatchingInformation />
+            </Grid>
+            <Grid item xs={12} lg={12}>
+              <CandidatesByState />
+            </Grid>
+            <Grid item xs={12} lg={12}>
+              <CandidatesByGender />
+            </Grid>
+         
           </>
         );
       
