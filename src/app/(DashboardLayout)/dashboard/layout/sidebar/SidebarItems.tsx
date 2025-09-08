@@ -5,6 +5,7 @@ import NavItem from "./NavItem";
 import NavGroup from "./NavGroup/NavGroup";
 import { getApplicationType, getRole } from "../../../../../lib/auth";
 import { IconBuildingArch, IconCreditCard, IconDashboard, IconDeviceDesktop, IconFilePencil, IconFingerprint, IconPrinter, IconRecycle, IconRecycleOff, IconSchool, IconShoppingBag, IconUsersGroup, IconVersionsFilled } from "@tabler/icons-react";
+import { IconUserBolt } from "@tabler/icons-react";
 
 interface SidebarItemsProps {
   toggleMobileSidebar: (event: React.MouseEvent<HTMLElement>) => void;
@@ -78,6 +79,13 @@ const MENU_CONFIG: Record<string, any[]> = {
       title: "Admissions",
       icon: IconSchool,
       href: "#",
+    },
+
+          {
+      id: "users-management",
+      title: "Users Management",
+      icon: IconUserBolt,
+      href: "/dashboard/users-management",
     },
   ],
   candidate: [

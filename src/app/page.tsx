@@ -106,7 +106,7 @@ const Home = () => {
                 gutterBottom
                 sx={{ fontWeight: 600, mb: 3 }}
               >
-                NOTICE OF 2025/2026 POST UTME SCREENING EXERCISE INTO ND/HND NURSING PROGRAMME FCT COLLEGE OF NURSING SCIENCES, GWAGWALADA, ABUJA
+                NOTICE OF 2025/2026 POST UTME SCREENING EXERCISE INTO ND/HND NURSING PROGRAMME AT FCT COLLEGE OF NURSING SCIENCES, GWAGWALADA, ABUJA
               </Typography>
               <Typography variant="body1" paragraph sx={{ mb: 4 }}>
                 Applications are invited from suitable/qualified candidates for Post UTME form for the 2025/2026 academic session.

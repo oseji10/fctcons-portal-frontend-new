@@ -37,6 +37,8 @@ import ClearIcon from '@mui/icons-material/Clear';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import SwapHorizIcon from '@mui/icons-material/SwapHoriz';
+import * as XLSX from 'xlsx';
+import { saveAs } from 'file-saver';
 
 interface Application {
     id: number;
@@ -72,6 +74,7 @@ interface Application {
         created_at: string;
         updated_at: string;
         deleted_at: string | null;
+        stateOfOrigin?: string;
     };
 }
 
@@ -88,6 +91,7 @@ const Applications = () => {
     const [currentApplication, setCurrentApplication] = useState<Application | null>(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
+    const [isDownloading, setIsDownloading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
@@ -96,12 +100,12 @@ const Applications = () => {
     const [expandedRow, setExpandedRow] = useState<number | null>(null);
     const [statusFilter, setStatusFilter] = useState<string>("");
     const [batchFilter, setBatchFilter] = useState<string>("");
-const [availableBatches, setAvailableBatches] = useState<string[]>([]);
+    const [availableBatches, setAvailableBatches] = useState<string[]>([]);
     const [selectedBatch, setSelectedBatch] = useState<string>("");
     const perPage = 10;
 
     const filterOptions: FilterOptions = {
-        batches: ['1A', '1B'], // Updated based on API response and edit modal options
+        batches: ['1A', '1B'],
         statuses: [
             { value: 'not_submitted', label: 'Account Created' },
             { value: 'payment_pending', label: 'Submitted, Payment Pending' },
@@ -126,16 +130,12 @@ const [availableBatches, setAvailableBatches] = useState<string[]>([]);
                 setApplications(response.data);
                 setTotalPages(1);
                 setTotalRecords(response.data.length);
-                
-                // Update filter options with unique batches from response
                 const batches = [...new Set(response.data.map((app: Application) => app.batch).filter(b => b))] as string[];
                 filterOptions.batches = batches.length > 0 ? batches : filterOptions.batches;
             } else {
                 setApplications(response.data?.data || []);
                 setTotalPages(response.data?.last_page || 1);
                 setTotalRecords(response.data?.total || 0);
-                
-                // Update filter options with unique batches from response
                 const batches = [...new Set(response.data?.data?.map((app: Application) => app.batch).filter(b => b))] as string[];
                 filterOptions.batches = batches.length > 0 ? batches : filterOptions.batches;
             }
@@ -149,56 +149,94 @@ const [availableBatches, setAvailableBatches] = useState<string[]>([]);
         }
     };
 
-   const fetchAvailableBatches = async () => {
-    try {
-        const response = await api.get('/all-batches');
-        if (response.data && Array.isArray(response.data)) {
-            // Extract just the batchId values from the response
-            const batchIds = response.data.map(batch => batch.batchId);
-            setAvailableBatches(batchIds);
+    const fetchAvailableBatches = async () => {
+        try {
+            const response = await api.get('/all-batches');
+            if (response.data && Array.isArray(response.data)) {
+                const batchIds = response.data.map(batch => batch.batchId);
+                setAvailableBatches(batchIds);
+            }
+        } catch (error) {
+            console.error('Error fetching batches:', error);
         }
-    } catch (error) {
-        console.error('Error fetching batches:', error);
-    }
-};
+    };
 
-
-const fetchAvailableBatchesMain = async () => {
-    try {
-        const response = await api.get('/batches'); // Or your specific endpoint
-        if (response.data && Array.isArray(response.data)) {
-            // If response is an array of batch objects with batchId property
-            const batchIds = response.data.map(batch => batch.batchId);
-            setAvailableBatches(batchIds);
-            
-            // Also update the filterOptions.batches
-            filterOptions.batches = batchIds.length > 0 ? batchIds : [];
-        } else if (response.data && response.data.data) {
-            // If response is paginated
-            const batchIds = response.data.data.map(batch => batch.batchId);
-            setAvailableBatches(batchIds);
-            filterOptions.batches = batchIds.length > 0 ? batchIds : [];
+    const fetchAvailableBatchesMain = async () => {
+        try {
+            const response = await api.get('/batches');
+            if (response.data && Array.isArray(response.data)) {
+                const batchIds = response.data.map(batch => batch.batchId);
+                setAvailableBatches(batchIds);
+                filterOptions.batches = batchIds.length > 0 ? batchIds : [];
+            } else if (response.data && response.data.data) {
+                const batchIds = response.data.data.map(batch => batch.batchId);
+                setAvailableBatches(batchIds);
+                filterOptions.batches = batchIds.length > 0 ? batchIds : [];
+            }
+        } catch (error) {
+            console.error('Error fetching batches:', error);
+            setAvailableBatches([]);
+            filterOptions.batches = [];
         }
-    } catch (error) {
-        console.error('Error fetching batches:', error);
-        // Optionally set some default batches if the API fails
-        setAvailableBatches([]);
-        filterOptions.batches = [];
-    }
-};
+    };
+
+    const handleDownloadExcel = () => {
+        if (!applications.length) {
+            setError('No applications available to download');
+            return;
+        }
+
+        setIsDownloading(true);
+        try {
+            const data = applications.map(app => ({
+                   username: app.jambId,
+                'password': app.batch,
+                'cohort': app.batch,
+                'lastname': app.jambId,
+                firstname: `${app.users.firstName} ${app.users.lastName}${app.users.otherNames ? ' ' + app.users.otherNames : ''}`,
+                email: app.users?.email,
+                phonenumber: app.users.phoneNumber,
+                city: app.users.stateOfOrigin || 'N/A'
+            }));
+
+            const worksheet = XLSX.utils.json_to_sheet(data);
+            const workbook = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(workbook, worksheet, 'Applications');
+
+            // Auto-size columns
+            const colWidths = [
+                { wch: 15 }, // JAMBID
+                { wch: 10 }, // Batch ID
+                { wch: 30 }, // fulname
+                { wch: 15 }, // phonenumber
+                { wch: 20 }  // stateOfOrigin
+            ];
+            worksheet['!cols'] = colWidths;
+
+            // Generate Excel file and trigger download
+            const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+            const blob = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+            saveAs(blob, 'applications.xlsx');
+        } catch (err) {
+            setError('Failed to generate Excel file');
+            console.error('Download error:', err);
+        } finally {
+            setIsDownloading(false);
+        }
+    };
 
     useEffect(() => {
         fetchData();
         fetchAvailableBatches();
         fetchAvailableBatchesMain();
-    }, [currentPage]); // Only trigger fetch on page change
+    }, [currentPage]);
 
     const handlePageChange = (event: React.ChangeEvent<unknown>, page: number) => {
         setCurrentPage(page);
     };
 
     const handleSearch = () => {
-        setCurrentPage(1); // Reset to first page on new search
+        setCurrentPage(1);
         fetchData();
     };
 
@@ -281,7 +319,7 @@ const fetchAvailableBatchesMain = async () => {
                 setApplications(updatedApplications);
                 setError(null);
                 handleCloseModal();
-                 window.location.reload();
+                window.location.reload();
             } else {
                 throw new Error(response.data?.message || 'Batch change failed');
             }
@@ -324,7 +362,7 @@ const fetchAvailableBatchesMain = async () => {
 
     return (
         <DashboardCard title="Applications">
-            <Box mb={2} display="flex"  alignItems="left">
+            <Box mb={2} display="flex" alignItems="left">
                 <Box mb={2} display="flex" justifyContent="space-between" alignItems="left" gap={2}>
                     <FormControl sx={{ minWidth: 200, flex: 1 }}>
                         <InputLabel>Filter by Status</InputLabel>
@@ -341,25 +379,23 @@ const fetchAvailableBatchesMain = async () => {
                             ))}
                         </Select>
                     </FormControl>
-
-                                  <FormControl sx={{ minWidth: 200, flex: 1 }}>
-    <InputLabel>Filter by Batch</InputLabel>
-    <Select
-        value={batchFilter}
-        onChange={(e) => setBatchFilter(e.target.value)}
-        label="Filter by Batch"
-    >
-        <MenuItem value="">All Batches</MenuItem>
-        {availableBatches.map(batchId => (
-            <MenuItem key={batchId} value={batchId}>
-                Batch {batchId}
-            </MenuItem>
-        ))}
-    </Select>
-</FormControl>
-
+                    <FormControl sx={{ minWidth: 200, flex: 1 }}>
+                        <InputLabel>Filter by Batch</InputLabel>
+                        <Select
+                            value={batchFilter}
+                            onChange={(e) => setBatchFilter(e.target.value)}
+                            label="Filter by Batch"
+                        >
+                            <MenuItem value="">All Batches</MenuItem>
+                            {availableBatches.map(batchId => (
+                                <MenuItem key={batchId} value={batchId}>
+                                    Batch {batchId}
+                                </MenuItem>
+                            ))}
+                        </Select>
+                    </FormControl>
                     <TextField
-                    sx={{ minWidth: 300, flex: 1 }}
+                        sx={{ minWidth: 300, flex: 1 }}
                         fullWidth
                         variant="outlined"
                         placeholder="Search by application ID, JAMB ID or name..."
@@ -372,7 +408,6 @@ const fetchAvailableBatchesMain = async () => {
                                 </IconButton>
                             ),
                         }}
-                        // sx={{ flex: 2 }}
                     />
                     <Button 
                         variant="contained" 
@@ -381,6 +416,15 @@ const fetchAvailableBatchesMain = async () => {
                         sx={{ height: '56px' }}
                     >
                         Search
+                    </Button>
+                    <Button 
+                        variant="contained" 
+                        onClick={handleDownloadExcel}
+                        disabled={isLoading || isDownloading || applications.length === 0}
+                        sx={{ height: '56px' }}
+                        startIcon={isDownloading ? <CircularProgress size={20} color="inherit" /> : null}
+                    >
+                        {isDownloading ? 'Downloading...' : 'Download Excel'}
                     </Button>
                 </Box>
             </Box>
@@ -604,7 +648,6 @@ const fetchAvailableBatchesMain = async () => {
                 </>
             )}
 
-            {/* View Application Modal */}
             <Modal
                 open={viewModalOpen}
                 onClose={handleCloseModal}
@@ -710,7 +753,6 @@ const fetchAvailableBatchesMain = async () => {
                 </Box>
             </Modal>
 
-            {/* Edit Application Modal */}
             <Modal
                 open={openModal}
                 onClose={handleCloseModal}
@@ -743,7 +785,6 @@ const fetchAvailableBatchesMain = async () => {
                                 <Typography variant="subtitle1">
                                     <strong>Candidate:</strong> {formatFullName(currentApplication.users)}
                                 </Typography>
-
                                 <Box display="flex" gap={2}>
                                     <TextField
                                         fullWidth
@@ -773,7 +814,6 @@ const fetchAvailableBatchesMain = async () => {
                                         </Select>
                                     </FormControl>
                                 </Box>
-
                                 <TextField
                                     fullWidth
                                     label="Alternate Phone Number"
@@ -783,7 +823,6 @@ const fetchAvailableBatchesMain = async () => {
                                         alternatePhoneNumber: e.target.value
                                     })}
                                 />
-
                                 <TextField
                                     fullWidth
                                     label="Licence ID"
@@ -793,7 +832,6 @@ const fetchAvailableBatchesMain = async () => {
                                         licenceId: e.target.value
                                     })}
                                 />
-
                                 <Box display="flex" gap={2}>
                                     <FormControl fullWidth>
                                         <InputLabel>Batch</InputLabel>
@@ -826,7 +864,6 @@ const fetchAvailableBatchesMain = async () => {
                                         </Select>
                                     </FormControl>
                                 </Box>
-
                                 <Box display="flex" gap={2}>
                                     <FormControl fullWidth>
                                         <InputLabel>Active</InputLabel>
@@ -857,13 +894,11 @@ const fetchAvailableBatchesMain = async () => {
                                         </Select>
                                     </FormControl>
                                 </Box>
-
                                 {error && (
                                     <Alert severity="error" sx={{ mt: 1 }}>
                                         {error}
                                     </Alert>
                                 )}
-
                                 <Box display="flex" justifyContent="flex-end" gap={1} sx={{ mt: 2 }}>
                                     <Button 
                                         onClick={handleCloseModal} 
@@ -889,7 +924,6 @@ const fetchAvailableBatchesMain = async () => {
                 </Box>
             </Modal>
 
-            {/* Change Batch Modal */}
             <Dialog
                 open={batchChangeModalOpen}
                 onClose={handleCloseModal}
@@ -905,22 +939,20 @@ const fetchAvailableBatchesMain = async () => {
                             <DialogContentText id="batch-change-dialog-description" mb={2}>
                                 Change batch for <strong>{formatFullName(currentApplication.users)}</strong> (Application ID: {currentApplication.applicationId})
                             </DialogContentText>
-                            
-                           <FormControl fullWidth>
-    <InputLabel>Select New Batch</InputLabel>
-    <Select
-        value={selectedBatch}
-        onChange={(e) => setSelectedBatch(e.target.value)}
-        label="Select New Batch"
-    >
-        {availableBatches.map(batchId => (
-            <MenuItem key={batchId} value={batchId}>
-                Batch {batchId}
-            </MenuItem>
-        ))}
-    </Select>
-</FormControl>
-
+                            <FormControl fullWidth>
+                                <InputLabel>Select New Batch</InputLabel>
+                                <Select
+                                    value={selectedBatch}
+                                    onChange={(e) => setSelectedBatch(e.target.value)}
+                                    label="Select New Batch"
+                                >
+                                    {availableBatches.map(batchId => (
+                                        <MenuItem key={batchId} value={batchId}>
+                                            Batch {batchId}
+                                        </MenuItem>
+                                    ))}
+                                </Select>
+                            </FormControl>
                             {error && (
                                 <Alert severity="error" sx={{ mt: 2 }}>
                                     {error}

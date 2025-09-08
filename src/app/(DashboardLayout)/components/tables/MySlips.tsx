@@ -238,8 +238,8 @@ const MyExamSlips = () => {
 
                                             <Box sx={{ mt: 3, p: 2, bgcolor: '#f5f5f5', borderRadius: 1 }}>
                                                 <Typography variant="body2" sx={{ fontStyle: 'italic' }}>
-                                                    Please bring this exam slip along with a valid ID to the examination center. 
-                                                    Arrive at least 30 minutes before your scheduled exam time.
+                                                    Please download and print your exam slip and come along with it to the examination venue. 
+                                                    Ensure you arrive at least 30 minutes before your scheduled exam time.
                                                 </Typography>
                                             </Box>
                                         </CardContent>

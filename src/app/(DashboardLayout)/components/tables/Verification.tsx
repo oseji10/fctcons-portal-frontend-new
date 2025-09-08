@@ -275,7 +275,7 @@ const Verification = () => {
                                                 </Typography>
                                             </Box>
 
-                                            <Box sx={{ mb: 2 }}>
+                                            {/* <Box sx={{ mb: 2 }}>
                                                 <Typography variant="subtitle2" sx={{ 
                                                     color: '#7f8c8d',
                                                     fontSize: '0.85rem'
@@ -285,7 +285,7 @@ const Verification = () => {
                                                 <Typography variant="body1" sx={{ fontWeight: '500' }}>
                                                     {candidate.maritalStatus || 'N/A'}
                                                 </Typography>
-                                            </Box>
+                                            </Box> */}
 
                                             <Box sx={{ mb: 2 }}>
                                                 <Typography variant="subtitle2" sx={{ 
@@ -387,7 +387,7 @@ const Verification = () => {
                                                 </Typography>
                                             </Box>
 
-                                            <Box sx={{ mb: 2 }}>
+                                            {/* <Box sx={{ mb: 2 }}>
                                                 <Typography variant="subtitle2" sx={{ 
                                                     color: '#7f8c8d',
                                                     fontSize: '0.85rem'
@@ -397,7 +397,7 @@ const Verification = () => {
                                                 <Typography variant="body1" sx={{ fontWeight: '500' }}>
                                                     {candidate.lgaOfOrigin || 'N/A'}
                                                 </Typography>
-                                            </Box>
+                                            </Box> */}
                                         </Grid>
                                     </Grid>
                                 </Box>
