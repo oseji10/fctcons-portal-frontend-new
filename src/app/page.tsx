@@ -126,7 +126,7 @@ const Home = () => {
                   variant="subtitle1"
                   sx={{ fontWeight: 600, color: "primary.dark" }}
                 >
-                  The portal will be open from <b>Monday, 8th September, 2025</b>, and ends on <b>Wednesday, 23rd September 2025</b> to obtain the forms.
+                  The portal will be open from <b>Monday, 15th September, 2025</b>, and ends on <b>Sunday, 28th September 2025</b> to obtain the forms.
                   Candidates are to note that there will be no extension of the deadline for the sales of application forms.
                 </Typography>
               </Box>
