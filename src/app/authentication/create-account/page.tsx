@@ -266,10 +266,10 @@ const Register2 = () => {
                     color: 'white'
                   },
                   "&.Mui-disabled": {
-      color: "white",
-      background: `linear-gradient(45deg, ${primaryColor}, ${secondaryColor})`,
-      opacity: 0.5,
-    },
+                    color: "white",
+                    background: `linear-gradient(45deg, ${primaryColor}, ${secondaryColor})`,
+                    opacity: 0.5,
+                  },
                 }}
               >
                 {validatingJamb ? "Validating..." : "Verify JAMB Details"}
@@ -595,7 +595,6 @@ const Register2 = () => {
             maxHeight: '95vh',
             minHeight: '80vh',
             overflow: "hidden",
-
             borderRadius: { xs: 2, sm: 4 },
             background: "white",
             boxShadow: { xs: "0 8px 16px rgba(0,0,0,0.1)", sm: "0 20px 40px rgba(0,0,0,0.1)" },
@@ -627,7 +626,6 @@ const Register2 = () => {
             <br/>
             <Typography 
               variant="body2" 
-              // fontWeight="100" 
               sx={{ fontSize: {mt: 3, xs: '1.5rem', sm: '1.5rem' } }}
             >
               2025 ND Nursing Application Portal
@@ -680,71 +678,68 @@ const Register2 = () => {
             )}
 
             <Box sx={{ flexGrow: 1 }}>
-              <form onSubmit={handleSubmit}>
-                {renderStepContent(activeStep)}
+              {renderStepContent(activeStep)}
                 
-                <Box sx={{ display: 'flex', flexDirection: 'row', pt: 3, mt: 3 }}>
-                  <Button
-                    color="inherit"
-                    disabled={activeStep === 0}
-                    onClick={handleBack}
-                    sx={{ mr: 1, fontSize: { xs: '0.75rem', sm: '0.875rem' } }}
-                    startIcon={<ArrowBack />}
-                  >
-                    Back
-                  </Button>
-                  <Box sx={{ flex: '1 1 auto' }} />
-                  
-                  {activeStep === steps.length - 1 ? (
-                    <Button 
-  type="submit"
-  variant="contained"
-  disabled={isSubmitting}
-  sx={{
-    py: { xs: 1, sm: 1.5 },
-    fontSize: { xs: '0.875rem', sm: '1rem' },
-    background: `linear-gradient(45deg, ${primaryColor}, ${secondaryColor})`,
-    color: "white",
-    "&:hover": {
-      background: `linear-gradient(45deg, ${secondaryColor}, ${primaryColor})`,
-    },
-    "&.Mui-disabled": {
-      color: "white",
-      background: `linear-gradient(45deg, ${primaryColor}, ${secondaryColor})`,
-      opacity: 0.5,
-    },
-  }}
-  startIcon={isSubmitting ? <CircularProgress size={20} /> : null}
->
-  {isSubmitting ? "Submitting..." : "Create Account"}
-</Button>
-
-                  ) : activeStep === 0 && jambValidated ? (
-                    <div></div>
-                  ) : (
-                    <Button 
-                      onClick={handleNext}
-                      variant="contained"
-                      disabled={activeStep === 0 && !jambValidated}
-                      sx={{
-                        py: { xs: 1, sm: 1.5 },
-                        fontSize: { xs: '0.875rem', sm: '1rem' },
+              <Box sx={{ display: 'flex', flexDirection: 'row', pt: 3, mt: 3 }}>
+                <Button
+                  color="inherit"
+                  disabled={activeStep === 0}
+                  onClick={handleBack}
+                  sx={{ mr: 1, fontSize: { xs: '0.75rem', sm: '0.875rem' } }}
+                  startIcon={<ArrowBack />}
+                >
+                  Back
+                </Button>
+                <Box sx={{ flex: '1 1 auto' }} />
+                
+                {activeStep === steps.length - 1 ? (
+                  <Button 
+                    onClick={handleSubmit}
+                    variant="contained"
+                    disabled={isSubmitting}
+                    sx={{
+                      py: { xs: 1, sm: 1.5 },
+                      fontSize: { xs: '0.875rem', sm: '1rem' },
+                      background: `linear-gradient(45deg, ${primaryColor}, ${secondaryColor})`,
+                      color: "white",
+                      "&:hover": {
+                        background: `linear-gradient(45deg, ${secondaryColor}, ${primaryColor})`,
+                      },
+                      "&.Mui-disabled": {
+                        color: "white",
                         background: `linear-gradient(45deg, ${primaryColor}, ${secondaryColor})`,
-                        "&:hover": {
-                          background: `linear-gradient(45deg, ${secondaryColor}, ${primaryColor})`,
-                        },
-                        "&.Mui-disabled": {
-      color: "white",
-      background: `linear-gradient(45deg, ${primaryColor}, ${secondaryColor})`,
-      opacity: 0.5,
-    },
-                      }}
-                    >
-                      Next
-                    </Button>
-                  )}
-                </Box>
-              </form>
+                        opacity: 0.5,
+                      },
+                    }}
+                    startIcon={isSubmitting ? <CircularProgress size={20} /> : null}
+                  >
+                    {isSubmitting ? "Submitting..." : "Confirm and Create Account"}
+                  </Button>
+                ) : activeStep === 0 && jambValidated ? (
+                  <div></div>
+                ) : (
+                  <Button 
+                    onClick={handleNext}
+                    variant="contained"
+                    disabled={activeStep === 0 && !jambValidated}
+                    sx={{
+                      py: { xs: 1, sm: 1.5 },
+                      fontSize: { xs: '0.875rem',aisant: '1rem' },
+                      background: `linear-gradient(45deg, ${primaryColor}, ${secondaryColor})`,
+                      "&:hover": {
+                        background: `linear-gradient(45deg, ${secondaryColor}, ${primaryColor})`,
+                      },
+                      "&.Mui-disabled": {
+                        color: "white",
+                        background: `linear-gradient(45deg, ${primaryColor}, ${secondaryColor})`,
+                        opacity: 0.5,
+                      },
+                    }}
+                  >
+                    Next
+                  </Button>
+                )}
+              </Box>
             </Box>
 
             <Divider sx={{ my: { xs: 2, sm: 3 }, flexShrink: 0 }}>
