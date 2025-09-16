@@ -216,7 +216,7 @@ const MyExamSlips = () => {
                                                         <strong>Date of Birth:</strong> {formatDate(slip.dateOfBirth)}
                                                     </Typography>
                                                     <Typography variant="body1" gutterBottom>
-                                                        <strong>Gender:</strong> {slip.gender}
+                                                        <strong>Gender:</strong> {slip?.jamb?.gender}
                                                     </Typography>
                                                 </Grid>
 
