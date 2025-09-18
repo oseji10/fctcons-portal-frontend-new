@@ -1,6 +1,6 @@
 "use client";
 
-import { Grid, Box, Card, Stack, Typography, Button, FormControlLabel, Checkbox } from "@mui/material";
+import { Grid, Box, Card, Stack, Typography, Button, FormControlLabel, Checkbox, Modal, Fade, Backdrop } from "@mui/material";
 import HomeIcon from "@mui/icons-material/Home";
 import Logo from "./(DashboardLayout)/dashboard/layout/shared/logo/Logo";
 import Link from "next/link";
@@ -10,6 +10,7 @@ import Script from "next/script"; // Import next/script
 
 const Home = () => {
   const [checked, setChecked] = useState(false);
+  const [openModal, setOpenModal] = useState(true); // State to control modal visibility
 
   const handleChange = (event) => {
     setChecked(event.target.checked);
@@ -22,6 +23,10 @@ const Home = () => {
 
   const handleCreateAccountClick = () => {
     router.push("/authentication/create-account");
+  };
+
+  const handleCloseModal = () => {
+    setOpenModal(false);
   };
 
   return (
@@ -44,6 +49,57 @@ const Home = () => {
           `,
         }}
       />
+
+      {/* Announcement Modal */}
+      <Modal
+        open={openModal}
+        onClose={handleCloseModal}
+        closeAfterTransition
+        BackdropComponent={Backdrop}
+        BackdropProps={{
+          timeout: 500,
+        }}
+      >
+        <Fade in={openModal}>
+          <Box
+            sx={{
+              position: "absolute",
+              top: "50%",
+              left: "50%",
+              transform: "translate(-50%, -50%)",
+              width: { xs: "90%", sm: 400 },
+              bgcolor: "white",
+              borderRadius: 3,
+              boxShadow: 24,
+              p: 4,
+              textAlign: "center",
+              background: "linear-gradient(135deg, #1976d2, #42a5f5)",
+              color: "white",
+            }}
+          >
+            <Typography variant="h5" component="h2" sx={{ fontWeight: 700, mb: 2 }}>
+              📢 Important Announcement
+            </Typography>
+            <Typography variant="body1" sx={{ mb: 3 }}>
+              If you have recently changed your institution on the JAMB portal to FCT College of Nursing Sciences, you can now create an account and continue your application, as your data has been successfully updated.
+            </Typography>
+            <Button
+              variant="contained"
+              color="secondary"
+              size="large"
+              onClick={handleCloseModal}
+              sx={{
+                px: 4,
+                bgcolor: "#fff",
+                color: "primary.main",
+                "&:hover": { bgcolor: "#e0e0e0" },
+              }}
+            >
+              Got It!
+            </Button>
+          </Box>
+        </Fade>
+      </Modal>
 
       <Box
         sx={{
@@ -109,8 +165,8 @@ const Home = () => {
                 NOTICE OF 2025/2026 POST UTME SCREENING EXERCISE INTO ND/HND NURSING PROGRAMME AT FCT COLLEGE OF NURSING SCIENCES, GWAGWALADA, ABUJA
               </Typography>
               <Typography variant="body1" paragraph sx={{ mb: 4 }}>
-                Applications are invited from suitable/qualified candidates for Post UTME form for the 2025/2026 academic session.
-                Interested candidates are expected to obtain application forms online, upon payment of a non-refundable fee of <b>N2,200</b>. Payment should be made using the Remita gateway via the application portal.
+                Applications are invited from suitably qualified candidates for the Post-UTME screening exercise for the 2025/2026 academic session.
+Interested candidates are to complete the application form online and thereafter make a non-refundable payment of <b>N2,200</b> through the Remita gateway on the application portal.
               </Typography>
 
               <Box
@@ -286,60 +342,6 @@ const Home = () => {
                 </li>
               </ol>
 
-              {/* <Typography
-                variant="h6"
-                component="h3"
-                sx={{ fontWeight: 600, mt: 4, mb: 2 }}
-              >
-                Payment Details
-              </Typography>
-              <ul style={{ marginBottom: 24 }}>
-                <li>
-                  <Typography variant="body1" paragraph>
-                    All Candidates are to pay a non-refundable fee of
-                    <b> N2,200 Naira only.</b>
-                  </Typography>
-                </li>
-                <li>
-                  <Typography variant="body1" paragraph>
-                    Print Your Registration Slip: Ensure you print your
-                    registration slip, as it will be a mandatory requirement
-                    during your visit to the school for the screening test.
-                  </Typography>
-                </li>
-              </ul> */}
-
-              {/* <Typography
-                variant="h6"
-                component="h3"
-                sx={{ fontWeight: 600, mt: 4, mb: 2 }}
-              >
-                Method of Screening
-              </Typography>
-              <Typography variant="body1" paragraph sx={{ mb: 2 }}>
-                Computer Based Test (CBT):
-              </Typography>
-              <ul style={{ marginBottom: 24 }}>
-                <li>
-                  <Typography variant="body1" paragraph>
-                    Screening subjects for National Diploma in Nursing: English,
-                    Physics, Chemistry, Biology & Current Affairs.
-                  </Typography>
-                </li>
-                <li>
-                  <Typography variant="body1" paragraph>
-                    Screening subjects for Basic Midwifery: English, Physics,
-                    Chemistry, Biology & Current Affairs.
-                  </Typography>
-                </li>
-                <li>
-                  <Typography variant="body1" paragraph>
-                    Screening subjects for Post Basic Nursing: Professional,
-                    English, Biology & Current Affairs.
-                  </Typography>
-                </li>
-              </ul> */}
-
               <Typography
                 variant="h6"
                 component="h3"
@@ -360,7 +362,7 @@ const Home = () => {
                 4. EXAMINATION VENUE
               </Typography>
               <Typography variant="body1" paragraph sx={{ mb: 4 }}>
-                FCT College of Nursing Sciences, Gwagwalada, located within University of Abuja Teaching Hospital (UATH) formerly known as Specialist Hospital
+                FCT College of Nursing Sciences, Gwagwalada, located within University of Abuja Teaching Hospital (UATH) popularly known as Specialist Hospital
               </Typography>
 
               <Box
@@ -387,8 +389,7 @@ const Home = () => {
                 Enquiries
               </Typography>
               <Typography variant="body1" paragraph sx={{ mb: 4 }}>
-                07039837749 / 08036625119 (08082775076-whatsapp only)<br/><br/>
-                You can reach us for any support during the application process via the contact details above or through the live chat on the portal or send us an email to <a href="mailto:support.consap@fcthhss.abj.gov.ng">support.consap@fcthhss.abj.gov.ng</a>.<br/>
+                You can reach us for any support during the application process via the live chat on the portal or send us an email to <a href="mailto:support.consap@fcthhss.abj.gov.ng">support.consap@fcthhss.abj.gov.ng</a>.<br/>
                 You can also join our Telegram channel for updates: <a target="_blank" href="https://t.me/+SWH5opeTcTXs34Ko">https://t.me/+SWH5opeTcTXs34Ko</a><br/>
               </Typography>
 
