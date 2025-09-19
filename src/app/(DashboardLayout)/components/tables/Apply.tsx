@@ -204,6 +204,10 @@ const Apply = () => {
 
   const handleSubmitRegistration = async () => {
     if (!validateOlevelResults()) return;
+    if (!previewImage) {
+    alert("Passport upload is required.");
+    return;
+  }
     
     setIsSubmitting(true);
     setError(null);
@@ -395,6 +399,10 @@ const Apply = () => {
     setError(null);
     if (activeStep === 0 && !validateBiodata()) return;
     if (activeStep === 1 && !validateOlevelResults()) return;
+     if (activeStep === 2 && !previewImage) {
+    alert("Please upload a passport before continuing.");
+    return;
+  }
     setActiveStep((prev) => prev + 1);
   };
 
@@ -673,6 +681,7 @@ const Apply = () => {
                   id="passport-upload"
                   type="file"
                   onChange={handlePhotoUpload}
+                  required
                 />
                 <label htmlFor="passport-upload">
                   <Button
