@@ -16,15 +16,15 @@ const CompletedForms = () => {
 
     const { analytics, loading } = useAnalytics();
 
-  const payment_completed = analytics?.payment_completed || 0;
+  const payment_pending = analytics?.payment_pending  || 0;
 
   return (
     <DashboardCard
-      title="Total Completed Forms"
+      title="Applied Yet to Pay"
     >
       <>
         <Typography variant="h3" fontWeight="700" mt="-20px">
-                 {loading ? 'Loading...' : payment_completed}
+                 {loading ? 'Loading...' : payment_pending}
         </Typography>
         
       </>

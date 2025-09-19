@@ -4,13 +4,16 @@ import { Grid, Box, Card, Stack, Typography, Button, FormControlLabel, Checkbox,
 import HomeIcon from "@mui/icons-material/Home";
 import Logo from "./(DashboardLayout)/dashboard/layout/shared/logo/Logo";
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import Script from "next/script"; // Import next/script
+import Script from "next/script";
 
 const Home = () => {
   const [checked, setChecked] = useState(false);
-  const [openModal, setOpenModal] = useState(true); // State to control modal visibility
+  const [openModal, setOpenModal] = useState(false); // Initialize as false
+  const [announcement, setAnnouncement] = useState({ title: "", message: "", status: "disabled" });
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   const handleChange = (event) => {
     setChecked(event.target.checked);
@@ -28,6 +31,47 @@ const Home = () => {
   const handleCloseModal = () => {
     setOpenModal(false);
   };
+
+  // Fetch announcement data from endpoint
+
+  // Fetch announcement data from endpoint
+  useEffect(() => {
+    const fetchAnnouncement = async () => {
+      try {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_APP_URL}/announcement`); // Replace with your actual endpoint
+        if (!response.ok) {
+          throw new Error("Failed to fetch announcement");
+        }
+        const data = await response.json();
+        // Check if the array is not empty and extract the first item
+        if (Array.isArray(data) && data.length > 0) {
+          const announcementData = data[0];
+          setAnnouncement({
+            title: announcementData.title || "📢 Important Announcement",
+            message: announcementData.message || "No announcement available at this time.",
+            status: announcementData.status || "disabled",
+          });
+          // Show modal only if status is "enabled"
+          if (announcementData.status === "enabled") {
+            setOpenModal(true);
+          }
+        } else {
+          throw new Error("Empty or invalid announcement data");
+        }
+        setLoading(false);
+      } catch (err) {
+        setError(err.message);
+        setAnnouncement({
+          title: "📢 Important Announcement",
+          message: "Unable to load announcement. Please try again later.",
+          status: "disabled",
+        });
+        setLoading(false);
+      }
+    };
+
+    fetchAnnouncement();
+  }, []);
 
   return (
     <>
@@ -78,10 +122,10 @@ const Home = () => {
             }}
           >
             <Typography variant="h5" component="h2" sx={{ fontWeight: 700, mb: 2 }}>
-              📢 Important Announcement
+              {loading ? "Loading..." : announcement.title}
             </Typography>
             <Typography variant="body1" sx={{ mb: 3 }}>
-              If you have recently changed your institution on the JAMB portal to FCT College of Nursing Sciences, you can now create an account and continue your application, as your data has been successfully updated.
+              {loading ? "Fetching announcement..." : announcement.message}
             </Typography>
             <Button
               variant="contained"

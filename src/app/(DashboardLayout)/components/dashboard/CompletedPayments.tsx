@@ -21,7 +21,7 @@ const CompletedPayments = () => {
 
   return (
     <DashboardCard
-      title="Total Completed Payments"
+      title="Applied and Paid"
     >
       <>
         <Typography variant="h3" fontWeight="700" mt="-20px">

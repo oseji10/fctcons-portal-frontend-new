@@ -22,7 +22,7 @@ const SignedUp = () => {
 
   return (
     <DashboardCard
-      title="Total Incomplete Forms"
+      title="Signed Up Yet to Apply"
     >
       <>
         <Typography variant="h3" fontWeight="700" mt="-20px">
