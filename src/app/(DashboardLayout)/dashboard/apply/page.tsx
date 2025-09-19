@@ -11,7 +11,7 @@ import Apply from '../../components/tables/Apply';
 
 const SamplePage = () => {
   return (
-    <PageContainer title="2025 Application" description="Application page">
+    <PageContainer title="2025 Application" description="Application page" allowedRoles={['CANDIDATE']}>
       <DashboardCard >
         <Apply/>
       </DashboardCard>

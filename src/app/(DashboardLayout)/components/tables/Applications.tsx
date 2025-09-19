@@ -529,9 +529,9 @@ const Applications = () => {
                                                     <IconButton onClick={() => handleOpenViewModal(application)}>
                                                         <VisibilityIcon />
                                                     </IconButton>
-                                                    <IconButton onClick={() => handleOpenEditModal(application)}>
+                                                    {/* <IconButton onClick={() => handleOpenEditModal(application)}>
                                                         <EditIcon />
-                                                    </IconButton>
+                                                    </IconButton> */}
                                                     {application.status === 'payment_completed' && (
                                                         <IconButton 
                                                             onClick={() => handleOpenBatchChangeModal(application)}
@@ -753,7 +753,7 @@ const Applications = () => {
                 </Box>
             </Modal>
 
-            <Modal
+            {/* <Modal
                 open={openModal}
                 onClose={handleCloseModal}
                 aria-labelledby="edit-modal-title"
@@ -922,7 +922,7 @@ const Applications = () => {
                         </>
                     )}
                 </Box>
-            </Modal>
+            </Modal> */}
 
             <Dialog
                 open={batchChangeModalOpen}

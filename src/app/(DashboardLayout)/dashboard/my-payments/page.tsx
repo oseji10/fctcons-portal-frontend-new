@@ -10,7 +10,7 @@ import MyPayments from '../../components/tables/MyPayments';
 
 const SamplePage = () => {
   return (
-    <PageContainer title="My Payments" description="All payments">
+    <PageContainer title="My Payments" description="All payments" allowedRoles={['CANDIDATE']}>
       <DashboardCard >
         <MyPayments/>
       </DashboardCard>

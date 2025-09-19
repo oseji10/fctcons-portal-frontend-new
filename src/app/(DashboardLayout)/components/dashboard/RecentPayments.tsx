@@ -58,6 +58,7 @@ const RecentPayments = () => {
           <TableHead>
             <TableRow>
               <TableCell><Typography variant="subtitle2" fontWeight={600}>SN</Typography></TableCell>
+              <TableCell><Typography variant="subtitle2" fontWeight={600}>Date</Typography></TableCell>
               <TableCell><Typography variant="subtitle2" fontWeight={600}>Name</Typography></TableCell>
               <TableCell><Typography variant="subtitle2" fontWeight={600}>RRR</Typography></TableCell>
               <TableCell><Typography variant="subtitle2" fontWeight={600}>Application Type</Typography></TableCell>
@@ -85,6 +86,18 @@ const RecentPayments = () => {
                     <Typography sx={{ fontSize: '15px', fontWeight: '500' }}>
                       {index + 1}
                     </Typography>
+                  </TableCell>
+                  <TableCell>
+                    <Typography color="textSecondary" variant="subtitle2" fontWeight={400}>
+                          {payment.created_at ? new Date(payment.created_at).toLocaleDateString('en-NG', {
+                            year: 'numeric',
+                            month: 'short',
+                            day: 'numeric',
+                          }) : 'N/A'} at {payment.created_at ? new Date(payment.created_at).toLocaleTimeString('en-NG', {
+                            hour: '2-digit',
+                            minute: '2-digit',
+                          }) : 'N/A'}
+                        </Typography>
                   </TableCell>
                   <TableCell>
                     <Box sx={{ display: 'flex', alignItems: 'center' }}>
