@@ -18,7 +18,7 @@ import {
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
-import Logo from "@/app/(DashboardLayout)/dashboard/layout/shared/logo/Logo";
+
 import axios from "axios";
 
 const AuthLogin = () => {

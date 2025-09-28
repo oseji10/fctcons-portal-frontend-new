@@ -124,7 +124,7 @@ const Home = () => {
             <Typography variant="h5" component="h2" sx={{ fontWeight: 700, mb: 2 }}>
               {loading ? "Loading..." : announcement.title}
             </Typography>
-            <Typography variant="body1" sx={{ mb: 3 }}>
+            <Typography variant="body1" sx={{ mb: 5 }}>
               {loading ? "Fetching announcement..." : announcement.message}
             </Typography>
             <Button

@@ -89,11 +89,11 @@ const RecentPayments = () => {
                   </TableCell>
                   <TableCell>
                     <Typography color="textSecondary" variant="subtitle2" fontWeight={400}>
-                          {payment.created_at ? new Date(payment.created_at).toLocaleDateString('en-NG', {
+                          {payment.updated_at ? new Date(payment.updated_at).toLocaleDateString('en-NG', {
                             year: 'numeric',
                             month: 'short',
                             day: 'numeric',
-                          }) : 'N/A'} at {payment.created_at ? new Date(payment.created_at).toLocaleTimeString('en-NG', {
+                          }) : 'N/A'} at {payment.updated_at ? new Date(payment.updated_at).toLocaleTimeString('en-NG', {
                             hour: '2-digit',
                             minute: '2-digit',
                           }) : 'N/A'}
