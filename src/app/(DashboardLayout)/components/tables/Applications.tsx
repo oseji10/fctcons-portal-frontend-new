@@ -102,7 +102,7 @@ const Applications = () => {
     const [batchFilter, setBatchFilter] = useState<string>("");
     const [availableBatches, setAvailableBatches] = useState<string[]>([]);
     const [selectedBatch, setSelectedBatch] = useState<string>("");
-    const perPage = 10;
+    const [perPage, setPerPage] = useState(10);
 
     const filterOptions: FilterOptions = {
         batches: ['1A', '1B'],
@@ -112,6 +112,8 @@ const Applications = () => {
             { value: 'payment_completed', label: 'Payment Completed' }
         ]
     };
+
+    const recordsPerPageOptions = [10, 50, 100, 200];
 
     const fetchData = async () => {
         setIsLoading(true);
@@ -229,10 +231,15 @@ const Applications = () => {
         fetchData();
         fetchAvailableBatches();
         fetchAvailableBatchesMain();
-    }, [currentPage]);
+    }, [currentPage, perPage, statusFilter, batchFilter, searchQuery]);
 
     const handlePageChange = (event: React.ChangeEvent<unknown>, page: number) => {
         setCurrentPage(page);
+    };
+
+    const handlePerPageChange = (event: React.ChangeEvent<{ value: unknown }>) => {
+        setPerPage(Number(event.target.value));
+        setCurrentPage(1); // Reset to first page when changing records per page
     };
 
     const handleSearch = () => {
@@ -364,6 +371,20 @@ const Applications = () => {
         <DashboardCard title="Applications">
             <Box mb={2} display="flex" alignItems="left">
                 <Box mb={2} display="flex" justifyContent="space-between" alignItems="left" gap={2}>
+                    <FormControl sx={{ minWidth: 120, flex: 1 }}>
+                        <InputLabel>Records per page</InputLabel>
+                        <Select
+                            value={perPage}
+                            onChange={handlePerPageChange}
+                            label="Records per page"
+                        >
+                            {recordsPerPageOptions.map(option => (
+                                <MenuItem key={option} value={option}>
+                                    {option}
+                                </MenuItem>
+                            ))}
+                        </Select>
+                    </FormControl>
                     <FormControl sx={{ minWidth: 200, flex: 1 }}>
                         <InputLabel>Filter by Status</InputLabel>
                         <Select
@@ -752,177 +773,6 @@ const Applications = () => {
                     )}
                 </Box>
             </Modal>
-
-            {/* <Modal
-                open={openModal}
-                onClose={handleCloseModal}
-                aria-labelledby="edit-modal-title"
-                aria-describedby="edit-modal-description"
-            >
-                <Box sx={{
-                    position: 'absolute',
-                    top: '50%',
-                    left: '50%',
-                    transform: 'translate(-50%, -50%)',
-                    width: { xs: '90%', sm: 600 },
-                    maxWidth: '95%',
-                    bgcolor: 'background.paper',
-                    boxShadow: 24,
-                    p: { xs: 2, sm: 4 },
-                    borderRadius: 2,
-                    maxHeight: '90vh',
-                    overflowY: 'auto',
-                }}>
-                    {currentApplication && (
-                        <>
-                            <Typography id="edit-modal-title" variant="h6" component="h2" fontWeight={600} mb={2}>
-                                Edit Application
-                            </Typography>
-                            <Box component="form" sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                                <Typography variant="subtitle1">
-                                    <strong>Application ID:</strong> {currentApplication.applicationId}
-                                </Typography>
-                                <Typography variant="subtitle1">
-                                    <strong>Candidate:</strong> {formatFullName(currentApplication.users)}
-                                </Typography>
-                                <Box display="flex" gap={2}>
-                                    <TextField
-                                        fullWidth
-                                        label="Date of Birth"
-                                        type="date"
-                                        value={currentApplication.dateOfBirth || ''}
-                                        onChange={(e) => setCurrentApplication({
-                                            ...currentApplication,
-                                            dateOfBirth: e.target.value
-                                        })}
-                                        InputLabelProps={{
-                                            shrink: true,
-                                        }}
-                                    />
-                                    <FormControl fullWidth>
-                                        <InputLabel>Gender</InputLabel>
-                                        <Select
-                                            value={currentApplication.gender}
-                                            onChange={(e) => setCurrentApplication({
-                                                ...currentApplication,
-                                                gender: e.target.value
-                                            })}
-                                            label="Gender"
-                                        >
-                                            <MenuItem value="Male">Male</MenuItem>
-                                            <MenuItem value="Female">Female</MenuItem>
-                                        </Select>
-                                    </FormControl>
-                                </Box>
-                                <TextField
-                                    fullWidth
-                                    label="Alternate Phone Number"
-                                    value={currentApplication.alternatePhoneNumber || ''}
-                                    onChange={(e) => setCurrentApplication({
-                                        ...currentApplication,
-                                        alternatePhoneNumber: e.target.value
-                                    })}
-                                />
-                                <TextField
-                                    fullWidth
-                                    label="Licence ID"
-                                    value={currentApplication.licenceId || ''}
-                                    onChange={(e) => setCurrentApplication({
-                                        ...currentApplication,
-                                        licenceId: e.target.value
-                                    })}
-                                />
-                                <Box display="flex" gap={2}>
-                                    <FormControl fullWidth>
-                                        <InputLabel>Batch</InputLabel>
-                                        <Select
-                                            value={currentApplication.batch}
-                                            onChange={(e) => setCurrentApplication({
-                                                ...currentApplication,
-                                                batch: e.target.value
-                                            })}
-                                            label="Batch"
-                                        >
-                                            {filterOptions.batches.map(batch => (
-                                                <MenuItem key={batch} value={batch}>Batch {batch}</MenuItem>
-                                            ))}
-                                        </Select>
-                                    </FormControl>
-                                    <FormControl fullWidth>
-                                        <InputLabel>Status</InputLabel>
-                                        <Select
-                                            value={currentApplication.status}
-                                            onChange={(e) => setCurrentApplication({
-                                                ...currentApplication,
-                                                status: e.target.value
-                                            })}
-                                            label="Status"
-                                        >
-                                            {filterOptions.statuses.map(option => (
-                                                <MenuItem key={option.value} value={option.value}>{option.label}</MenuItem>
-                                            ))}
-                                        </Select>
-                                    </FormControl>
-                                </Box>
-                                <Box display="flex" gap={2}>
-                                    <FormControl fullWidth>
-                                        <InputLabel>Active</InputLabel>
-                                        <Select
-                                            value={currentApplication.isActive}
-                                            onChange={(e) => setCurrentApplication({
-                                                ...currentApplication,
-                                                isActive: e.target.value
-                                            })}
-                                            label="Active"
-                                        >
-                                            <MenuItem value="true">Yes</MenuItem>
-                                            <MenuItem value="false">No</MenuItem>
-                                        </Select>
-                                    </FormControl>
-                                    <FormControl fullWidth>
-                                        <InputLabel>Present</InputLabel>
-                                        <Select
-                                            value={currentApplication.isPresent}
-                                            onChange={(e) => setCurrentApplication({
-                                                ...currentApplication,
-                                                isPresent: e.target.value
-                                            })}
-                                            label="Present"
-                                        >
-                                            <MenuItem value="true">Yes</MenuItem>
-                                            <MenuItem value="false">No</MenuItem>
-                                        </Select>
-                                    </FormControl>
-                                </Box>
-                                {error && (
-                                    <Alert severity="error" sx={{ mt: 1 }}>
-                                        {error}
-                                    </Alert>
-                                )}
-                                <Box display="flex" justifyContent="flex-end" gap={1} sx={{ mt: 2 }}>
-                                    <Button 
-                                        onClick={handleCloseModal} 
-                                        color="secondary"
-                                        disabled={isSubmitting}
-                                        variant="outlined"
-                                    >
-                                        Cancel
-                                    </Button>
-                                    <Button 
-                                        onClick={handleSubmit} 
-                                        variant="contained" 
-                                        color="primary"
-                                        disabled={isSubmitting}
-                                        startIcon={isSubmitting ? <CircularProgress size={20} color="inherit" /> : null}
-                                    >
-                                        {isSubmitting ? 'Updating...' : 'Update'}
-                                    </Button>
-                                </Box>
-                            </Box>
-                        </>
-                    )}
-                </Box>
-            </Modal> */}
 
             <Dialog
                 open={batchChangeModalOpen}
