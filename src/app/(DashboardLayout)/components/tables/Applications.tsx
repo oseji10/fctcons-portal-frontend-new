@@ -76,6 +76,10 @@ interface Application {
         deleted_at: string | null;
         stateOfOrigin?: string;
     };
+    jamb:{
+        state: string | null;
+        jambId: string | null;
+    }
 }
 
 interface FilterOptions {
@@ -198,7 +202,7 @@ const Applications = () => {
                 firstname: `${app.users.firstName} ${app.users.lastName}${app.users.otherNames ? ' ' + app.users.otherNames : ''}`,
                 email: app.users?.email,
                 phonenumber: app.users.phoneNumber,
-                city: app.users.stateOfOrigin || 'N/A'
+                city: app?.jamb?.state || 'N/A'
             }));
 
             const worksheet = XLSX.utils.json_to_sheet(data);
@@ -586,6 +590,9 @@ const Applications = () => {
                                                                             <strong>Gender:</strong> {application?.gender}
                                                                         </Typography>
                                                                         <Typography>
+                                                                            <strong>State:</strong> {application?.jamb?.state}
+                                                                        </Typography>
+                                                                        <Typography>
                                                                             <strong>Email:</strong> {application?.users?.email}
                                                                         </Typography>
                                                                         <Typography>
@@ -708,6 +715,9 @@ const Applications = () => {
                                         </Typography>
                                         <Typography>
                                             <strong>Gender:</strong> {currentApplication.gender}
+                                        </Typography>
+                                        <Typography>
+                                            <strong>State:</strong> {currentApplication.jamb.state}
                                         </Typography>
                                         <Typography>
                                             <strong>Email:</strong> {currentApplication.users.email}

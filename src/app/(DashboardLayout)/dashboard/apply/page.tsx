@@ -13,7 +13,7 @@ const SamplePage = () => {
   return (
     <PageContainer title="2025 Application" description="Application page" allowedRoles={['CANDIDATE']}>
       <DashboardCard >
-        <Apply/>
+        {/* <Apply/> */}
       </DashboardCard>
     </PageContainer>
   );
