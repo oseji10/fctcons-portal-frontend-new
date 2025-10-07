@@ -17,6 +17,8 @@ import TotalVerified from '../components/dashboard/TotalVerified';
 import BatchingInformation from '../components/dashboard/BatchingInformation';
 import CandidatesByState from '../components/dashboard/CandidatesByState';
 import CandidatesByGender from '../components/dashboard/CandidatesByGender';
+import Verification from '../components/tables/Verification';
+import VerificationInformation from '../components/dashboard/VerificationInformation';
 
 
 
@@ -127,6 +129,9 @@ const Dashboard = () => {
               <CandidatesByGender />
             </Grid>
             <Grid item xs={12} lg={12}>
+              <VerificationInformation />
+            </Grid>
+            <Grid item xs={12} lg={12}>
               <RecentPayments />
             </Grid>
           </>
@@ -140,6 +145,9 @@ const Dashboard = () => {
             </Grid>
             <Grid item xs={12} lg={6}>
               <ReBatchedCandidates />
+            </Grid>
+            <Grid item xs={12} lg={12}>
+              <VerificationInformation />
             </Grid>
             {/* <Grid item xs={12} lg={6}>
               <CompletedPayments />

@@ -28,7 +28,7 @@ interface AttendanceRecord {
     hall: string;
     isPresent: string;
     seatNumber: string;
-    users: {
+    user_info: {
         firstName: string;
         lastName: string;
         otherNames: string | null;
@@ -152,9 +152,12 @@ const AttendancePage = () => {
         }
     };
 
-    const formatFullName = (user: any) => {
-        return `${user?.firstName} ${user?.lastName}${user?.otherNames ? ' ' + user?.otherNames : ''}`;
-    };
+  const formatFullName = (record: any) => {
+    const user = record?.applications?.users;
+    if (!user) return "N/A";
+    return `${user.firstName || ''} ${user.lastName || ''}${user.otherNames ? ' ' + user.otherNames : ''}`.trim();
+};
+
 
     return (
         <DashboardCard title="Attendance Records">
@@ -257,12 +260,12 @@ const AttendancePage = () => {
                                 attendanceData.data.map((record) => (
                                     <TableRow key={record.id}>
                                         <TableCell>{record.applicationId}</TableCell>
-                                        <TableCell>{formatFullName(record.users)}</TableCell>
-                                        <TableCell>{record.jambId}</TableCell>
+                                        <TableCell>{formatFullName(record)}</TableCell>
+                                        <TableCell>{record?.applications?.jambId}</TableCell>
                                         <TableCell>{record.batch}</TableCell>
                                         <TableCell>{record.hall}</TableCell>
                                         <TableCell>{record.seatNumber}</TableCell>
-                                        <TableCell>{record.isPresent === "1" ? 'Yes' : 'No'}</TableCell>
+                                        <TableCell>{record?.applications?.isPresent === "1" ? 'Yes' : 'No'}</TableCell>
                                     </TableRow>
                                 ))
                             ) : (
