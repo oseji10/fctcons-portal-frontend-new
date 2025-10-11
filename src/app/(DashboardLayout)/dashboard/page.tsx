@@ -76,7 +76,7 @@ const Dashboard = () => {
     {
       title: "Admission",
       description: "Track admission status",
-      url: "#",
+      url: "/dashboard/my-admission",
       color: "secondary",
       icon: <ArrowForward />
     },
@@ -191,6 +191,9 @@ const Dashboard = () => {
             </Grid>
             <Grid item xs={12} lg={6}>
               <TotalVerified />
+            </Grid>
+             <Grid item xs={12} lg={12}>
+              <VerificationInformation />
             </Grid>
             <Grid item xs={12} lg={12}>
               <BatchingInformation />

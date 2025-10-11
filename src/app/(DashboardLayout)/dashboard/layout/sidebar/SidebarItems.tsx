@@ -119,7 +119,7 @@ const MENU_CONFIG: Record<string, any[]> = {
       id: "admissions",
       title: "Admission",
       icon: IconSchool,
-      href: "#",
+      href: "/dashboard/my-admission",
     },
   ],
   verification: [
